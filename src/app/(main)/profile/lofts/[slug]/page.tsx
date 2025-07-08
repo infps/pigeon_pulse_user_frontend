@@ -1,11 +1,13 @@
 "use client";
 import { BirdsColumns, Loft } from "@/components/columns";
+import ComboBox from "@/components/combo-box";
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
-import { getLoft } from "@/lib/api/loft";
+import { getLoft, inviteToLoft } from "@/lib/api/loft";
+import { listUsers } from "@/lib/api/user";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { use } from "react";
+import React, { use, useState, useEffect } from "react";
 
 export default function page({
   params,
@@ -14,6 +16,7 @@ export default function page({
 }) {
   const { slug } = use(params);
   const router = useRouter();
+  const [searchTerm , setSearchTerm] = useState("");
   const { data, isError, error, isPending, isSuccess } = getLoft({
     params: {},
     loftId: slug,
@@ -49,8 +52,7 @@ export default function page({
         </div>
       </div>
       <div className="mt-4">
-        <div className="flex items-center justify-end mb-4">
-          {/* <h1 className="text-2xl font-bold">Birds in Loft</h1> */}
+        <div className="flex items-center justify-end gap-4 mb-4">
           <Button asChild>
             <Link
               href={`/profile/lofts/${loft.id}/birds/create`}

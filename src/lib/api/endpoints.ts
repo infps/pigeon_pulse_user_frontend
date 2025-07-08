@@ -11,14 +11,20 @@ const loftEndpoints = {
   createBird: (loftId: string) => `/user/lofts/${loftId}/birds/create`,
   getBird: (birdId: string) => `/user/birds/${birdId}`,
   updateBird: (birdId: string) => `/user/birds/${birdId}`,
+  inviteToLoft: (loftId: string, userId: string) =>
+    `/user/lofts/invite/${loftId}/${userId}`,
 };
 
 const paymentsEndpoints = {
   base: "/user/payments",
 };
 
+const userEndpoints = {
+  base: "/user",
+};
 export const apiEndpoints = {
   raceEndpoints,
   loftEndpoints,
   paymentsEndpoints,
+  userEndpoints,
 };

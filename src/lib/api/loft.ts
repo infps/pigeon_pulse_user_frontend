@@ -129,3 +129,28 @@ export function updateBird({
     invalidateKeys: [{ queryKey: ["birds", "get", birdId], exact: false }],
   });
 }
+
+export function inviteToLoft({
+  params,
+  loftId,
+  userId,
+}: {
+  params: Record<string, string>;
+  loftId: string;
+  userId: string;
+}) {
+  const queryParams = Object.entries(params)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return useApiRequest({
+    endpoint: apiEndpoints.loftEndpoints.inviteToLoft(loftId, userId),
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    queryKey: ["lofts", "invite", loftId, userId, queryParams],
+    params,
+    invalidateKeys: [{ queryKey: ["lofts", "get", loftId], exact: false }],
+  });
+}
