@@ -24,3 +24,21 @@ export function getMyRaces({ params }: { params: Record<string, string> }) {
     params,
   });
 }
+
+export function getRace({
+  params,
+  raceId,
+}: {
+  params: Record<string, string>;
+  raceId: string;
+}) {
+  const queryParams = Object.entries(params)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return useApiRequest({
+    endpoint: apiEndpoints.raceEndpoints.getRaceById(raceId),
+    queryKey: ["races", "get", raceId, queryParams],
+    params,
+  });
+}

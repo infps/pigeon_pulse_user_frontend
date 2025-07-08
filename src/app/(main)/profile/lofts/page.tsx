@@ -15,16 +15,18 @@ export default function page() {
   }
   const lofts: MyLofts[] = data?.data || [];
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">My Lofts</h1>
-        <Button asChild>
-          <Link href={"/profile/lofts/create"} className="text-white">
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
+        <h1 className="text-xl sm:text-2xl font-bold">My Lofts</h1>
+        <Button asChild className="w-full sm:w-auto">
+          <Link href={"/profile/lofts/create"} className="text-white text-center">
             Create Loft
           </Link>
         </Button>
       </div>
-      <DataTable columns={MyLoftsColumns} data={lofts} />
+      <div className="overflow-x-auto">
+        <DataTable columns={MyLoftsColumns} data={lofts} />
+      </div>
     </div>
   );
 }

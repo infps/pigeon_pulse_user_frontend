@@ -49,34 +49,36 @@ export default function page({
   const loft: Loft = data?.data;
 
   return (
-    <div>
-      <div className="rounded-lg border p-4 grid h-32 grid-cols-3 gap-4">
-        <div className="border-r flex flex-col justify-between">
-          <h1 className="text-muted-foreground">Loft Name</h1>
-          <p className="text-2xl font-medium">{loft.name}</p>
+    <div className="p-4 sm:p-6">
+      <div className="rounded-lg border p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 h-auto sm:h-32">
+        <div className="sm:border-r flex flex-col justify-between">
+          <h1 className="text-muted-foreground text-sm sm:text-base">Loft Name</h1>
+          <p className="text-lg sm:text-2xl font-medium">{loft.name}</p>
         </div>
-        <div className="border-r flex flex-col justify-between">
-          <h1 className="text-muted-foreground">Loft Location</h1>
-          <p className="text-2xl font-medium">{loft.location}</p>
+        <div className="sm:border-r flex flex-col justify-between">
+          <h1 className="text-muted-foreground text-sm sm:text-base">Loft Location</h1>
+          <p className="text-lg sm:text-2xl font-medium">{loft.location}</p>
         </div>
-        <div className=" flex flex-col justify-between">
-          <h1 className="text-muted-foreground">Birds Count</h1>
-          <p className="text-2xl font-medium">{loft._count.birds}</p>
+        <div className="flex flex-col justify-between">
+          <h1 className="text-muted-foreground text-sm sm:text-base">Birds Count</h1>
+          <p className="text-lg sm:text-2xl font-medium">{loft._count.birds}</p>
         </div>
       </div>
-      <div className="mt-4">
-        <div className="flex items-center justify-end gap-4 mb-4">
+      <div className="mt-4 sm:mt-6">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 sm:gap-4 mb-4 sm:mb-6">
           <ShareLoftDialog slug={slug} />
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link
               href={`/profile/lofts/${loft.id}/birds/create`}
-              className="text-white"
+              className="text-white text-center"
             >
               Add Bird
             </Link>
           </Button>
         </div>
-        <DataTable data={loft.birds} columns={BirdsColumns} />
+        <div className="overflow-x-auto">
+          <DataTable data={loft.birds} columns={BirdsColumns} />
+        </div>
       </div>
     </div>
   );
@@ -121,9 +123,9 @@ function ShareLoftDialog({ slug }: { slug: string }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Share Loft</Button>
+        <Button variant="outline" className="w-full sm:w-auto">Share Loft</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="mx-4 sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Share Loft</DialogTitle>
         </DialogHeader>
@@ -168,15 +170,15 @@ function ShareLoftDialog({ slug }: { slug: string }) {
                         className="flex items-center justify-between p-2 border rounded-md hover:bg-gray-50 cursor-pointer"
                         onClick={() => handleUserInvite(user.id)}
                       >
-                        <div>
-                          <p className="text-sm font-medium">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">
                             {user.name || user.email}
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-muted-foreground truncate">
                             {user.email}
                           </p>
                         </div>
-                        <Button size="sm" variant="outline">
+                        <Button size="sm" variant="outline" className="ml-2 flex-shrink-0">
                           Invite
                         </Button>
                       </div>
@@ -190,7 +192,7 @@ function ShareLoftDialog({ slug }: { slug: string }) {
 
         <DialogFooter className="sm:justify-start">
           <DialogClose asChild>
-            <Button type="button" variant="secondary">
+            <Button type="button" variant="secondary" className="w-full sm:w-auto">
               Close
             </Button>
           </DialogClose>

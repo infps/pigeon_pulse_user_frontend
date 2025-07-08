@@ -29,11 +29,13 @@ export default function page() {
   }
   const payments: MyPayments[] = data?.data;
   return (
-    <>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">My Payments</h1>
+    <div className="p-4 sm:p-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold">My Payments</h1>
       </div>
-      <DataTable columns={MyPaymentsColumns} data={payments} />
-    </>
+      <div className="overflow-x-auto">
+        <DataTable columns={MyPaymentsColumns} data={payments} />
+      </div>
+    </div>
   );
 }

@@ -39,17 +39,17 @@ export default function page() {
   const invitations: LoftInvitations[] = invitationsData?.data || [];
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Lofts shared with me</h1>
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
+        <h1 className="text-xl sm:text-2xl font-bold">Lofts shared with me</h1>
         <Dialog open={isInvitationsOpen} onOpenChange={setIsInvitationsOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline">
+            <Button variant="outline" className="w-full sm:w-auto">
               Invitations (
               {invitations.filter((inv) => inv.status === "PENDING").length})
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto mx-4">
             <DialogHeader>
               <DialogTitle>Loft Invitations</DialogTitle>
               <DialogDescription>
@@ -77,7 +77,9 @@ export default function page() {
           </DialogContent>
         </Dialog>
       </div>
-      <DataTable columns={SharedLoftsColumns} data={lofts} />
+      <div className="overflow-x-auto">
+        <DataTable columns={SharedLoftsColumns} data={lofts} />
+      </div>
     </div>
   );
 }
@@ -92,9 +94,9 @@ function InvitationComponent({ invitation }: { invitation: LoftInvitations }) {
     invitationId: invitation.id,
   });
   return (
-    <div key={invitation.id} className="border rounded-lg p-4 space-y-3">
+    <div key={invitation.id} className="border rounded-lg p-3 sm:p-4 space-y-3">
       <div>
-        <h3 className="font-semibold text-lg">{invitation.loft.name}</h3>
+        <h3 className="font-semibold text-base sm:text-lg">{invitation.loft.name}</h3>
         <p className="text-sm text-muted-foreground">
           Location: {invitation.loft.location}
         </p>
@@ -105,10 +107,11 @@ function InvitationComponent({ invitation }: { invitation: LoftInvitations }) {
           Invited on: {new Date(invitation.createdAt).toLocaleDateString()}
         </p>
       </div>
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         <Button
           size="sm"
           variant="default"
+          className="w-full sm:w-auto"
           onClick={async () => {
             if (!acceptInviteMutateAsync) return;
             try {
@@ -124,6 +127,7 @@ function InvitationComponent({ invitation }: { invitation: LoftInvitations }) {
         <Button
           size="sm"
           variant="destructive"
+          className="w-full sm:w-auto"
           onClick={async () => {
             if (!rejectInviteMutateAsync) return;
             try {

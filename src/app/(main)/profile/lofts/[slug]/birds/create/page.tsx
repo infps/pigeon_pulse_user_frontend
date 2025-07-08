@@ -53,7 +53,7 @@ export default function page({
   }
   const loft: Loft = data?.data;
   return (
-    <div>
+    <div className="p-4 sm:p-6">
       <CreateBirdForm loftName={loft.name} loftId={slug} />
     </div>
   );
@@ -167,9 +167,9 @@ function CreateBirdForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8 max-w-3xl mx-auto py-10"
+        className="space-y-6 sm:space-y-8 max-w-3xl mx-auto py-6 sm:py-10"
       >
-        <div className="flex items-center w-full gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 sm:gap-6">
           <FormField
             control={form.control}
             name="loftname"
@@ -251,7 +251,7 @@ function CreateBirdForm({
             )}
           />
         </div>
-        <div className="flex items-center w-full gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 sm:gap-6">
           <FormField
             control={form.control}
             name="gender"
@@ -305,7 +305,7 @@ function CreateBirdForm({
             )}
           />
         </div>
-        <div className="flex items-center w-full gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 sm:gap-6">
           <FormField
             control={form.control}
             name="color"
@@ -347,7 +347,7 @@ function CreateBirdForm({
           />
         </div>
 
-        <div className="flex items-center w-full gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 sm:gap-6">
           <FormField
             control={form.control}
             name="wingspan"
@@ -388,7 +388,7 @@ function CreateBirdForm({
             )}
           />
         </div>
-        <div className="flex items-center w-full gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 sm:gap-6">
           <FormField
             control={form.control}
             name="raceExperience"
@@ -493,7 +493,7 @@ function CreateBirdForm({
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
+        <Button className="w-full sm:w-auto sm:self-end" type="submit">
           Save Bird
         </Button>
       </form>

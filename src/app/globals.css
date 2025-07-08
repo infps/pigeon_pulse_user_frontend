@@ -10,7 +10,7 @@
   --card-foreground: oklch(0.1944 0.0498 267.7362);
   --popover: oklch(1.0000 0 0);
   --popover-foreground: oklch(0.1944 0.0498 267.7362);
-  --primary: oklch(0.6338 0.1082 216.0949);
+  --primary: rgb(24, 154, 180);
   --primary-foreground: oklch(0.9751 0.0127 244.2507);
   --secondary: oklch(0.3642 0.0726 233.0205);
   --secondary-foreground: oklch(0.9751 0.0127 244.2507);
@@ -170,4 +170,33 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+#pointer {
+  /* width: 200px; */
+  height: 50px;
+  position: relative;
+  background: rgba(24,154,180,0.3);
+}
+#pointer:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 25px solid white;
+  border-top: 25px solid transparent;
+  border-bottom: 25px solid transparent;
+}
+#pointer:before {
+  content: "";
+  position: absolute;
+  right: -25px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 25px solid rgba(24,154,180,0.3);
+  border-top: 25px solid transparent;
+  border-bottom: 25px solid transparent;
 }

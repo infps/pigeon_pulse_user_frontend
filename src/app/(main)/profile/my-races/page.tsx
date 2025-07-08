@@ -29,13 +29,13 @@ export default function page() {
   }
   const races: MyRaces[] = data?.data;
   return (
-    <>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">My Races</h1>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Filter by Status:</span>
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4 sm:mb-6 gap-3 lg:gap-0">
+        <h1 className="text-xl sm:text-2xl font-bold">My Races</h1>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
+          <span className="text-sm font-medium whitespace-nowrap">Filter by Status:</span>
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
             <SelectContent>
@@ -46,7 +46,9 @@ export default function page() {
           </Select>
         </div>
       </div>
-      <DataTable columns={MyRacesColumns} data={races} />
-    </>
+      <div className="overflow-x-auto">
+        <DataTable columns={MyRacesColumns} data={races} />
+      </div>
+    </div>
   );
 }

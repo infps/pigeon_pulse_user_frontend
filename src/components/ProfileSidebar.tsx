@@ -54,8 +54,8 @@ export default function ProfileSidebar() {
     }
   };
   return (
-    <div className="w-64">
-      <div className="flex flex-col gap-2">
+    <div className="w-full lg:w-64 lg:min-w-64">
+      <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible">
         {sidebarItems.map((item) => (
           <Link
             key={item.name}
@@ -64,21 +64,22 @@ export default function ProfileSidebar() {
               (pathname === item.href ||
                 (item.href !== "/profile" && pathname.startsWith(item.href))) &&
               "bg-secondary text-white"
-            } flex items-center justify-between py-4 px-1`}
+            } flex items-center justify-between py-3 lg:py-4 px-3 lg:px-1 whitespace-nowrap flex-shrink-0 lg:flex-shrink min-w-fit lg:min-w-0`}
           >
             <div className="flex items-center gap-2">
-              <item.leftIcon className="w-5 h-5" />
-              <span>{item.name}</span>
+              <item.leftIcon className="w-4 h-4 lg:w-5 lg:h-5" />
+              <span className="text-sm lg:text-base">{item.name}</span>
             </div>
-            <item.rightIcon className="w-5 h-5" />
+            <item.rightIcon className="w-4 h-4 lg:w-5 lg:h-5 hidden lg:block" />
           </Link>
         ))}
       </div>
       <div
         onClick={handleLogout}
-        className="mt-4 flex items-center space-x-4 p-4 cursor-pointer"
+        className="mt-4 flex items-center space-x-2 lg:space-x-4 p-3 lg:p-4 cursor-pointer"
       >
-        <LogOut /> <span>Logout</span>
+        <LogOut className="w-4 h-4 lg:w-5 lg:h-5" /> 
+        <span className="text-sm lg:text-base">Logout</span>
       </div>
     </div>
   );

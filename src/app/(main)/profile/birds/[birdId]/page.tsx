@@ -48,28 +48,28 @@ export default function page({
   }
   const bird: Bird = data?.data;
   return (
-    <div>
-      <div className="rounded-lg border p-4 grid h-32 grid-cols-3 gap-4">
-        <div className="border-r flex items-center gap-4">
+    <div className="p-4 sm:p-6">
+      <div className="rounded-lg border p-3 sm:p-4 grid grid-cols-1 lg:grid-cols-3 gap-4 h-auto lg:h-32">
+        <div className="lg:border-r flex flex-col lg:flex-row items-start lg:items-center gap-3 lg:gap-4">
           <Image
             src={bird?.photoUrl || ""}
             alt="Bird Image"
             width={80}
             height={80}
-            className="rounded-full aspect-square object-cover w-20 h-20"
+            className="rounded-full aspect-square object-cover w-16 h-16 sm:w-20 sm:h-20"
           />
           <div className="flex flex-col">
-            <h1 className="text-muted-foreground">Bird Name</h1>
-            <p className="text-2xl font-medium mt-4">{bird.name}</p>
+            <h1 className="text-muted-foreground text-sm sm:text-base">Bird Name</h1>
+            <p className="text-lg sm:text-2xl font-medium mt-1 sm:mt-4">{bird.name}</p>
           </div>
         </div>
-        <div className="border-r flex flex-col justify-between">
-          <h1 className="text-muted-foreground">Totat Races Joined</h1>
-          <p className="text-2xl font-medium">{bird._count.raceEntries}</p>
+        <div className="lg:border-r flex flex-col justify-between">
+          <h1 className="text-muted-foreground text-sm sm:text-base">Total Races Joined</h1>
+          <p className="text-lg sm:text-2xl font-medium">{bird._count.raceEntries}</p>
         </div>
-        <div className=" flex flex-col justify-between">
-          <h1 className="text-muted-foreground">Loft Name</h1>
-          <p className="text-2xl font-medium">{bird.loft.name}</p>
+        <div className="flex flex-col justify-between">
+          <h1 className="text-muted-foreground text-sm sm:text-base">Loft Name</h1>
+          <p className="text-lg sm:text-2xl font-medium">{bird.loft.name}</p>
         </div>
       </div>
       <UpdateBirdForm initialData={bird} />
@@ -143,9 +143,9 @@ function UpdateBirdForm({ initialData }: { initialData: Bird }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8 mx-auto py-10"
+        className="space-y-6 sm:space-y-8 mx-auto py-6 sm:py-10"
       >
-        <div className="flex items-center w-full gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 sm:gap-6">
           <FormField
             control={form.control}
             name="loftname"
@@ -187,7 +187,7 @@ function UpdateBirdForm({ initialData }: { initialData: Bird }) {
             )}
           />
         </div>
-        <div className="flex items-center w-full gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 sm:gap-6">
           <FormField
             control={form.control}
             name="bandNumber"
@@ -227,7 +227,7 @@ function UpdateBirdForm({ initialData }: { initialData: Bird }) {
             )}
           />
         </div>
-        <div className="flex items-center w-full gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 sm:gap-6">
           <FormField
             control={form.control}
             name="gender"
@@ -281,7 +281,7 @@ function UpdateBirdForm({ initialData }: { initialData: Bird }) {
             )}
           />
         </div>
-        <div className="flex items-center w-full gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 sm:gap-6">
           <FormField
             control={form.control}
             name="color"
@@ -323,7 +323,7 @@ function UpdateBirdForm({ initialData }: { initialData: Bird }) {
           />
         </div>
 
-        <div className="flex items-center w-full gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 sm:gap-6">
           <FormField
             control={form.control}
             name="wingspan"
@@ -364,7 +364,7 @@ function UpdateBirdForm({ initialData }: { initialData: Bird }) {
             )}
           />
         </div>
-        <div className="flex items-center w-full gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center w-full gap-4 sm:gap-6">
           <FormField
             control={form.control}
             name="raceExperience"
@@ -424,7 +424,7 @@ function UpdateBirdForm({ initialData }: { initialData: Bird }) {
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
+        <Button className="w-full sm:w-auto sm:self-end" type="submit">
           Update Bird
         </Button>
       </form>

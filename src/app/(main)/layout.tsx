@@ -1,4 +1,5 @@
 "use client";
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { useSession } from "@/lib/auth-client";
 import useUserStore from "@/store/store";
@@ -29,6 +30,7 @@ export default function RootLayout({
     <>
       <Header />
       {children}
+      <Footer />
     </>
   );
 }

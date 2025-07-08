@@ -52,44 +52,46 @@ export default function CreateLoft() {
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8 max-w-3xl mx-auto py-10 flex flex-col"
-      >
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Loft Name</FormLabel>
-              <FormControl>
-                <Input placeholder="" type="text" {...field} />
-              </FormControl>
+    <div className="p-4 sm:p-6">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6 sm:space-y-8 max-w-3xl mx-auto py-6 sm:py-10 flex flex-col"
+        >
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Loft Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="" type="text" {...field} />
+                </FormControl>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Location</FormLabel>
-              <FormControl>
-                <Input placeholder="" type="text" {...field} />
-              </FormControl>
+          <FormField
+            control={form.control}
+            name="location"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Location</FormLabel>
+                <FormControl>
+                  <Input placeholder="" type="text" {...field} />
+                </FormControl>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button disabled={isPending} type="submit" className="self-end">
-          Create
-        </Button>
-      </form>
-    </Form>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button disabled={isPending} type="submit" className="self-end w-full sm:w-auto">
+            Create
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 }

@@ -1,6 +1,7 @@
 const raceEndpoints = {
   base: "/race",
   myraces: "/user/races",
+  getRaceById: (id: string)=>`/race/${id}`,
 };
 
 const loftEndpoints = {
