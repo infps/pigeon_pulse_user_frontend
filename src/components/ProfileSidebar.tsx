@@ -1,8 +1,14 @@
+"use client";
+import { signOut } from "@/lib/auth-client";
+import useUserStore from "@/store/store";
 import { ChevronRight, LogOut, User } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 export default function ProfileSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { setUserData } = useUserStore();
   const sidebarItems = [
     {
       name: "My Profile",
@@ -35,7 +41,18 @@ export default function ProfileSidebar() {
       rightIcon: ChevronRight,
     },
   ];
-  console.log(pathname);
+  const handleLogout = async () => {
+    const { data, error } = await signOut();
+    if (error) {
+      console.error("Logout failed:", error);
+      return;
+    }
+    if (data) {
+      setUserData(null, null);
+      toast.success("Logout successful");
+      router.push("/");
+    }
+  };
   return (
     <div className="w-64">
       <div className="flex flex-col gap-2">
@@ -44,8 +61,8 @@ export default function ProfileSidebar() {
             key={item.name}
             href={item.href}
             className={`${
-              (pathname === item.href || 
-               (item.href !== "/profile" && pathname.startsWith(item.href))) && 
+              (pathname === item.href ||
+                (item.href !== "/profile" && pathname.startsWith(item.href))) &&
               "bg-secondary text-white"
             } flex items-center justify-between py-4 px-1`}
           >
@@ -57,7 +74,10 @@ export default function ProfileSidebar() {
           </Link>
         ))}
       </div>
-      <div className="mt-4 flex items-center space-x-4 p-4">
+      <div
+        onClick={handleLogout}
+        className="mt-4 flex items-center space-x-4 p-4 cursor-pointer"
+      >
         <LogOut /> <span>Logout</span>
       </div>
     </div>

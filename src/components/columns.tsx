@@ -125,3 +125,187 @@ export const BirdsColumns: ColumnDef<Bird>[] = [
     },
   },
 ];
+
+export type MyRaces = {
+  id: string;
+  userId: string;
+  createdAt: Date;
+  status: "PENDING" | "PAID" | "CANCELLED";
+  raceId: string;
+  birdId: string;
+  paymentId: string | null;
+  birdStatus: "UNKNOWN" | "ARRIVED" | "DISQUALIFIED" | "RETIRED" | "MISSING";
+  arrivalTime: Date | null;
+  position: number | null;
+  speed: number | null;
+  race: {
+    status: "UPCOMING" | "LIVE" | "COMPLETED";
+    id: string;
+    name: string;
+  };
+  bird: {
+    select: {
+      id: true;
+      name: true;
+      breed: true;
+      rfIdTag: true;
+    };
+  };
+};
+
+export const MyRacesColumns: ColumnDef<MyRaces>[] = [
+  {
+    accessorKey: "Sl No.",
+    header: "Sl No.",
+    cell: ({ row }) => row.index + 1,
+  },
+  {
+    accessorKey: "race.name",
+    header: "Race Name",
+  },
+  {
+    accessorKey: "bird.name",
+    header: "Bird Name",
+  },
+  {
+    accessorKey: "bird.rfIdTag",
+    header: "RFID Tag",
+  },
+  {
+    accessorKey: "race.status",
+    header: "Race Status",
+    cell: ({ row }) => {
+      const raceStatus = row.original.race.status;
+      return (
+        <span
+          className={`px-2 py-1 rounded-full text-xs ${
+            raceStatus === "UPCOMING"
+              ? "bg-blue-100 text-blue-800"
+              : raceStatus === "LIVE"
+              ? "bg-green-100 text-green-800"
+              : "bg-gray-100 text-gray-800"
+          }`}
+        >
+          {raceStatus}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "position",
+    header: "Position",
+    cell: ({ row }) => {
+      const position = row.original.position;
+      return (
+        <span className="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800">
+          {position !== null ? position : "N/A"}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "speed",
+    header: "Speed (m/s)",
+    cell: ({ row }) => {
+      const speed = row.original.speed;
+      return (
+        <span className="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800">
+          {speed !== null ? speed.toFixed(2) : "N/A"}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "birdStatus",
+    header: "Bird Status",
+    cell: ({ row }) => {
+      const birdStatus = row.original.birdStatus;
+      return (
+        <span
+          className={`px-2 py-1 rounded-full text-xs ${
+            birdStatus === "ARRIVED"
+              ? "bg-green-100 text-green-800"
+              : birdStatus === "DISQUALIFIED"
+              ? "bg-red-100 text-red-800"
+              : birdStatus === "RETIRED"
+              ? "bg-yellow-100 text-yellow-800"
+              : "bg-gray-100 text-gray-800"
+          }`}
+        >
+          {birdStatus}
+        </span>
+      );
+    },
+  },
+];
+
+type RaceEntry = {
+  race: {
+    id: string;
+    name: string;
+  };
+  bird: {
+    id: string;
+    name: string;
+    bandNumber: string;
+  };
+};
+
+export type MyPayments = {
+  raceEntries: RaceEntry[];
+  id: string;
+  paypalTransactionId: string;
+  payerEmail: string;
+  amount: number;
+  currency: string;
+  status: "PENDING" | "SUCCESS" | "FAILES";
+  paymentTime: Date;
+  userId: string;
+  createdAt: Date;
+};
+
+export const MyPaymentsColumns: ColumnDef<MyPayments>[] = [
+  {
+    accessorKey: "Sl No.",
+    header: "Sl No.",
+    cell: ({ row }) => row.index + 1,
+  },
+  {
+    accessorKey: "paypalTransactionId",
+    header: "Transaction ID",
+  },
+  {
+    accessorKey: "payerEmail",
+    header: "Payer Email",
+  },
+  {
+    accessorKey: "amount",
+    header: "Amount",
+    cell: ({ row }) => `$${row.original.amount.toFixed(2)}`,
+  },
+  {
+    accessorKey: "currency",
+    header: "Currency",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status;
+      return (
+        <span
+          className={`px-2 py-1 rounded-full text-xs ${
+            status === "PENDING"
+              ? "bg-yellow-100 text-yellow-800"
+              : status === "SUCCESS"
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
+          }`}
+        >
+          {status}
+        </span>
+      );
+    },
+  },
+];
+
