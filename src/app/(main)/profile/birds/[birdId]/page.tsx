@@ -1,15 +1,9 @@
 "use client";
-import { use, useState } from "react";
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,52 +17,70 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import React from "react";
-import { createBird, getLoft } from "@/lib/api/loft";
-import { Loft } from "@/components/columns";
-import {
-  FileInput,
-  FileUploader,
-  FileUploaderContent,
-  FileUploaderItem,
-} from "@/components/ui/file-upload";
-import { CloudUpload, Paperclip } from "lucide-react";
+import { getBird, updateBird } from "@/lib/api/loft";
+import { Bird } from "@/lib/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
+import React, { use } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import z from "zod";
 
 export default function page({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ birdId: string }>;
 }) {
-  const { slug } = use(params);
-  const { data, isError, isPending, mutateAsync, isSuccess } = getLoft({
+  const { birdId } = use(params);
+  const { data, isError, error, isSuccess, isPending } = getBird({
     params: {},
-    loftId: slug,
+    birdId,
   });
+  console.log(data, isError, error, isSuccess, isPending);
   if (isPending) {
-    return <div>Loading loft details...</div>;
+    return <div>Loading...</div>;
   }
-  if (isError) {
-    return <div>Error loading loft details</div>;
+  if (isError && error) {
+    return <div>Error: {error.message}</div>;
   }
-  const loft: Loft = data?.data;
+  if (isSuccess && !data) {
+    return <div>No data found</div>;
+  }
+  const bird: Bird = data?.data;
   return (
     <div>
-      <CreateBirdForm loftName={loft.name} loftId={slug} />
+      <div className="rounded-lg border p-4 grid h-32 grid-cols-3 gap-4">
+        <div className="border-r flex items-center gap-4">
+          <Image
+            src={bird?.photoUrl || ""}
+            alt="Bird Image"
+            width={80}
+            height={80}
+            className="rounded-full aspect-square object-cover w-20 h-20"
+          />
+          <div className="flex flex-col">
+            <h1 className="text-muted-foreground">Bird Name</h1>
+            <p className="text-2xl font-medium mt-4">{bird.name}</p>
+          </div>
+        </div>
+        <div className="border-r flex flex-col justify-between">
+          <h1 className="text-muted-foreground">Totat Races Joined</h1>
+          <p className="text-2xl font-medium">{bird._count.raceEntries}</p>
+        </div>
+        <div className=" flex flex-col justify-between">
+          <h1 className="text-muted-foreground">Loft Name</h1>
+          <p className="text-2xl font-medium">{bird.loft.name}</p>
+        </div>
+      </div>
+      <UpdateBirdForm initialData={bird} />
     </div>
   );
 }
 
-function CreateBirdForm({
-  loftName,
-  loftId,
-}: {
-  loftName: string;
-  loftId: string;
-}) {
-  const { isPending, mutateAsync } = createBird({
+function UpdateBirdForm({ initialData }: { initialData: Bird }) {
+  const { mutateAsync, isPending } = updateBird({
     params: {},
-    loftId,
+    birdId: initialData.id,
   });
   const formSchema = z.object({
     loftname: z.string().min(1, "Loft name is required"),
@@ -90,76 +102,40 @@ function CreateBirdForm({
     penNumber: z.string().min(1, "Pen number is required"),
     raceExperience: z.number(),
     rfIdTag: z.string().min(1, "RFID tag is required"),
-    photo: z
-      .instanceof(File)
-      .refine((file) => file.size <= 1024 * 1024 * 4, {
-        message: "File size must be less than 4MB",
-      })
-      .optional(),
   });
-  const [files, setFiles] = useState<File[] | null>(null);
-  const dropZoneConfig = {
-    maxFiles: 1,
-    maxSize: 1024 * 1024 * 4,
-    accept: {
-      "image/*": [".jpeg", ".jpg", ".png", ".gif", ".svg"],
-    },
-  };
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      loftname: loftName,
-      name: "",
-      bandNumber: "",
-      breed: "",
-      color: "",
-      gender: "MALE",
-      status: "ACTIVE",
-      age: 0,
-      wingspan: 0,
-      vaccinationStatus: false,
-      penNumber: "",
-      raceExperience: 0,
-      rfIdTag: "",
+      loftname: initialData.loft.name,
+      name: initialData.name,
+      bandNumber: initialData.bandNumber,
+      breed: initialData.breed || "",
+      color: initialData.color || "",
+      gender: initialData.gender,
+      status: initialData.status,
+      age: initialData.age || 0,
+      wingspan: initialData.wingspan || 0,
+      vaccinationStatus: initialData.vaccinationStatus || false,
+      penNumber: initialData.penNumber || "",
+      raceExperience: initialData.raceExperience || 0,
+      rfIdTag: initialData.rfIdTag || "",
     },
   });
 
-  async function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!mutateAsync) {
       return;
     }
-    if (!files || files.length === 0) {
-      toast.error("Please upload a bird image");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("bandNumber", data.bandNumber);
-    formData.append("breed", data.breed);
-    formData.append("color", data.color);
-    formData.append("gender", data.gender);
-    formData.append("status", data.status);
-    formData.append("age", data.age.toString());
-    formData.append("wingspan", data.wingspan.toString());
-    formData.append("vaccinationStatus", data.vaccinationStatus.toString());
-    formData.append("penNumber", data.penNumber);
-    formData.append("raceExperience", data.raceExperience.toString());
-    formData.append("rfIdTag", data.rfIdTag);
-    formData.append("photo", files[0]);
     try {
-      const { data, error, status } = await mutateAsync(formData);
+      const { data, error, status } = await mutateAsync(values);
       if (error) {
         toast.error(`Error: ${error}`);
       } else {
-        toast.success("Bird created successfully");
-        form.reset();
-        setFiles(null);
+        toast.success("Bird updated successfully");
       }
     } catch (error) {
-      console.error("Error creating bird:", error);
-      toast.error("Failed to create bird. Please try again.");
+      console.error("Error updating bird:", error);
+      toast.error("Failed to update bird. Please try again.");
     }
   }
 
@@ -167,7 +143,7 @@ function CreateBirdForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8 max-w-3xl mx-auto py-10"
+        className="space-y-8 mx-auto py-10"
       >
         <div className="flex items-center w-full gap-6">
           <FormField
@@ -431,51 +407,6 @@ function CreateBirdForm({
         </div>
         <FormField
           control={form.control}
-          name="photo"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Bird Image</FormLabel>
-              <FormControl>
-                <FileUploader
-                  value={files}
-                  onValueChange={setFiles}
-                  dropzoneOptions={dropZoneConfig}
-                  className="relative bg-background rounded-lg p-2"
-                >
-                  <FileInput
-                    id="fileInput"
-                    className="outline-dashed outline-1 outline-slate-500"
-                  >
-                    <div className="flex items-center justify-center flex-col p-8 w-full ">
-                      <CloudUpload className="text-gray-500 w-10 h-10" />
-                      <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                        <span className="font-semibold">Click to upload</span>
-                        &nbsp; or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        SVG, PNG, JPG or GIF
-                      </p>
-                    </div>
-                  </FileInput>
-                  <FileUploaderContent>
-                    {files &&
-                      files.length > 0 &&
-                      files.map((file, i) => (
-                        <FileUploaderItem key={i} index={i}>
-                          <Paperclip className="h-4 w-4 stroke-current" />
-                          <span>{file.name}</span>
-                        </FileUploaderItem>
-                      ))}
-                  </FileUploaderContent>
-                </FileUploader>
-              </FormControl>
-              <FormDescription>1024x1024 size recommended</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="vaccinationStatus"
           render={({ field }) => (
             <FormItem className="w-full flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
@@ -494,7 +425,7 @@ function CreateBirdForm({
           )}
         />
         <Button className="w-full" type="submit">
-          Save Bird
+          Update Bird
         </Button>
       </form>
     </Form>

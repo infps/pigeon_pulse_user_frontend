@@ -16,3 +16,27 @@ export type ListRaces = {
   photoUrl: string | null;
   createdAt: Date;
 };
+
+export type Bird = {
+  _count: {
+    raceEntries: number;
+  };
+  id: string;
+  name: string;
+  bandNumber: string;
+  breed?: string | null;
+  color?: string | null;
+  gender: "MALE" | "FEMALE";
+  age?: number | null;
+  photoUrl?: string | null;
+  wingspan?: number | null;
+  vaccinationStatus?: boolean;
+  penNumber?: string | null;
+  raceExperience?: number | null;
+  status: "ACTIVE" | "MISSING" | "HOSPITALIZED";
+  rfIdTag?: string | null;
+  loftId: string;
+  loft: {
+    name: string;
+  };
+};
