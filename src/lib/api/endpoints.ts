@@ -11,8 +11,11 @@ const loftEndpoints = {
   createBird: (loftId: string) => `/user/lofts/${loftId}/birds/create`,
   getBird: (birdId: string) => `/user/birds/${birdId}`,
   updateBird: (birdId: string) => `/user/birds/${birdId}`,
-  inviteToLoft: (loftId: string, userId: string) =>
-    `/user/lofts/invite/${loftId}/${userId}`,
+  getSharedLofts: `/user/shared-lofts`,
+  getLoftInvitations: `/user/lofts/invitations`,
+  acceptLoftInvitation: (invitationId: string) => `/user/lofts/invitations/accept/${invitationId}`,
+  rejectLoftInvitation: (invitationId: string) => `/user/lofts/invitations/reject/${invitationId}`,
+  inviteToLoft: (loftId: string) => `/user/lofts/invite/${loftId}`,
 };
 
 const paymentsEndpoints = {

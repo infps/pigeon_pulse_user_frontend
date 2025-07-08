@@ -12,6 +12,83 @@ export function listMyLofts({ params }: { params: Record<string, string> }) {
     params,
   });
 }
+export function listSharedLoft({ params }: { params: Record<string, string> }) {
+  const queryParams = Object.entries(params)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return useApiRequest({
+    endpoint: apiEndpoints.loftEndpoints.getSharedLofts,
+    queryKey: ["lofts", "shared", "list", queryParams],
+    params,
+  });
+}
+
+export function listLoftInvitations({
+  params,
+}: {
+  params: Record<string, string>;
+}) {
+  const queryParams = Object.entries(params)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return useApiRequest({
+    endpoint: apiEndpoints.loftEndpoints.getLoftInvitations,
+    queryKey: ["lofts", "invitations", queryParams],
+    params,
+  });
+}
+
+export function acceptLoftInvitation({
+  params,
+  invitationId,
+}: {
+  params: Record<string, string>;
+  invitationId: string;
+}) {
+  const queryParams = Object.entries(params)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return useApiRequest({
+    endpoint: apiEndpoints.loftEndpoints.acceptLoftInvitation(invitationId),
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    queryKey: ["lofts", "invitations", "accept", invitationId, queryParams],
+    params,
+    invalidateKeys: [
+      { queryKey: ["lofts", "list"], exact: false },
+      { queryKey: ["lofts", "shared", "list"], exact: false },
+      { queryKey: ["lofts", "invitations"], exact: false },
+    ],
+  });
+}
+
+export function rejectLoftInvitation({
+  params,
+  invitationId,
+}: {
+  params: Record<string, string>;
+  invitationId: string;
+}) {
+  const queryParams = Object.entries(params)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return useApiRequest({
+    endpoint: apiEndpoints.loftEndpoints.rejectLoftInvitation(invitationId),
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    queryKey: ["lofts", "invitations", "reject", invitationId, queryParams],
+    params,
+    invalidateKeys: [{ queryKey: ["lofts", "list"], exact: false }],
+  });
+}
 
 export function getLoft({
   params,
@@ -133,23 +210,21 @@ export function updateBird({
 export function inviteToLoft({
   params,
   loftId,
-  userId,
 }: {
   params: Record<string, string>;
   loftId: string;
-  userId: string;
 }) {
   const queryParams = Object.entries(params)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
 
   return useApiRequest({
-    endpoint: apiEndpoints.loftEndpoints.inviteToLoft(loftId, userId),
+    endpoint: apiEndpoints.loftEndpoints.inviteToLoft(loftId),
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    queryKey: ["lofts", "invite", loftId, userId, queryParams],
+    queryKey: ["lofts", "invite", loftId, queryParams],
     params,
     invalidateKeys: [{ queryKey: ["lofts", "get", loftId], exact: false }],
   });

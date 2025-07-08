@@ -40,3 +40,29 @@ export type Bird = {
     name: string;
   };
 };
+
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+export type LoftInvitations = {
+  loft: {
+    id: string;
+    name: string;
+    location: string;
+  };
+  invitedBy: {
+    id: string;
+    name: string | null;
+  };
+} & {
+  id: string;
+  status: "PENDING" | "ACCEPTED" | "DECLINED" | "EXPIRED";
+  loftId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  invitedById: string;
+  invitedUserId: string | null;
+};

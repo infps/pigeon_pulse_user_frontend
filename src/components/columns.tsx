@@ -9,6 +9,48 @@ export type MyLofts = {
   location: string;
 };
 
+export type SharedLofts = {
+  user: {
+    name: string | null;
+  };
+  id: string;
+  loftId: string;
+  name: string;
+  location: string;
+  userId: string;
+  createdAt: Date;
+};
+
+export const SharedLoftsColumns: ColumnDef<SharedLofts>[] = [
+  {
+    accessorKey: "Sl No.",
+    header: "Sl No.",
+    cell: ({ row }) => row.index + 1,
+  },
+  {
+    accessorKey: "name",
+    header: "Loft Name",
+  },
+  {
+    accessorKey: "loftId",
+    header: "Loft ID",
+  },
+  {
+    accessorKey: "location",
+    header: "Location",
+  },
+  {
+    accessorKey: "user.name",
+    header: "Shared By",
+    cell: ({ row }) => {
+      const userName = row.original.user.name;
+      return (
+        <span className="text-muted-foreground">{userName || "Unknown"}</span>
+      );
+    },
+  },
+];
+
 export type Bird = {
   id: string;
   name: string;
@@ -308,4 +350,3 @@ export const MyPaymentsColumns: ColumnDef<MyPayments>[] = [
     },
   },
 ];
-
