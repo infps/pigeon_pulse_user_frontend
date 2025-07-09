@@ -24,6 +24,24 @@ export function listSharedLoft({ params }: { params: Record<string, string> }) {
   });
 }
 
+export function listLoftBirds({
+  params,
+  loftId,
+}: {
+  params: Record<string, string>;
+  loftId: string;
+}) {
+  const queryParams = Object.entries(params)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return useApiRequest({
+    endpoint: apiEndpoints.loftEndpoints.getBirdByLoftId(loftId),
+    queryKey: ["lofts", "birds", loftId, queryParams],
+    params,
+  });
+}
+
 export function listLoftInvitations({
   params,
 }: {

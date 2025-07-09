@@ -3,7 +3,9 @@ import RaceComponent from "@/components/RaceComponent";
 import { Button } from "@/components/ui/button";
 import { getRace, listRaces } from "@/lib/api/race";
 import { ListRaces } from "@/lib/types";
+import { useRouter } from "next/navigation";
 import { use } from "react";
+import { toast } from "sonner";
 
 export default function page({
   params,
@@ -11,6 +13,7 @@ export default function page({
   params: Promise<{ raceId: string }>;
 }) {
   const { raceId } = use(params);
+  const router = useRouter();
   const { data, error, isError, isPending, isSuccess } = getRace({
     params: {},
     raceId,
@@ -76,6 +79,13 @@ export default function page({
           </div>
         </div>
         <Button
+          onClick={() => {
+            if (race.status !== "UPCOMING") {
+              toast.error("You can only register for upcoming races.");
+              return;
+            }
+            router.push(`/races/${race.id}/register`);
+          }}
           asChild
           className="bg-transparent cursor-pointer shadow-none rounded-none text-black"
         >

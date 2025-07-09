@@ -42,3 +42,43 @@ export function getRace({
     params,
   });
 }
+
+export function registerRace({
+  params,
+  raceId,
+}: {
+  params: Record<string, string>;
+  raceId: string;
+}) {
+  const queryParams = Object.entries(params)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return useApiRequest({
+    endpoint: apiEndpoints.raceEndpoints.registerRace(raceId),
+    queryKey: ["races", "register", raceId, queryParams],
+    params,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
+export function capturePayment({
+  params,
+}: {
+  params: Record<string, string>;
+}) {
+  const queryParams = Object.entries(params)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return useApiRequest({
+    endpoint: apiEndpoints.raceEndpoints.capturePayment,
+    headers:{
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+  });
+}

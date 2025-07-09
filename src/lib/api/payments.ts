@@ -12,3 +12,4 @@ export function getMyPayments({ params }: { params: Record<string, string> }) {
     params,
   });
 }
+
