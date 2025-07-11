@@ -44,9 +44,15 @@ export default function RaceComponent({ race }: { race: ListRaces }) {
           </span>
         </div>
         <p className="font-bold mt-1">{race.name}</p>
-        <Button variant={"outline"} className="mt-2 border-2 border-primary">
-          Register Now
-        </Button>
+        {race.status === "UPCOMING" && (
+          <Button
+            variant={"outline"}
+            asChild
+            className="mt-2 border-2 border-primary"
+          >
+            <Link href={`/races/${race.id}/register`}>Register Now</Link>
+          </Button>
+        )}
       </div>
     </div>
   );

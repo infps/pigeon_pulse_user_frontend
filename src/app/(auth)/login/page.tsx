@@ -56,7 +56,7 @@ export default function page() {
   }
 
   return (
-    <div className="w-full max-w-xl mx-auto bg-white py-10 px-14 border shadow-2xl">
+    <div className="w-full max-w-xl md:mx-auto mx-10 bg-white py-10 md:px-14 px-5 border shadow-2xl">
       <Form {...form}>
         <h1 className="text-3xl font-bold text-center mb-1">Log In to AGN</h1>
         <p className="text-center text-sm text-muted-foreground mb-3">

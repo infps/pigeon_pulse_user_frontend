@@ -20,6 +20,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { signUp } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -31,6 +32,7 @@ const formSchema = z.object({
 });
 
 export default function page() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,7 +54,8 @@ export default function page() {
       if (error) {
         toast.error(error.message || "Failed to sign up. Please try again.");
       } else {
-        toast.success("Sign up successful! Please check your email to verify.");
+        toast.success("Sign up successful");
+        router.push("/");
       }
     } catch (error) {
       console.error("Form submission error", error);

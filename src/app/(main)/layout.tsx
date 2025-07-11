@@ -13,18 +13,23 @@ export default function RootLayout({
 }>) {
   const { data, error, isPending } = useSession();
   const router = useRouter();
-  const { setUserData } = useUserStore.getState();
+  const { setUserData, userData } = useUserStore.getState();
   useEffect(() => {
-    if (data) {
+    if (data && !isPending) {
       setUserData(data.session, data.user);
     }
-  }, [data]);
+  }, [data,isPending, setUserData]);
   if (isPending) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-blue-600"></div>
       </div>
     );
+  }
+  if (data && !userData.user) {
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-blue-600"></div>
+    </div>;
   }
   return (
     <>

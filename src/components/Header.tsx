@@ -28,14 +28,15 @@ export default function Header() {
       <div className="h-16 sm:h-20 flex items-center justify-between px-4 sm:px-6 lg:px-10 bg-white">
         {/* Logo */}
         <div className="flex items-center">
-          <Image
-            src={"/logo.png"}
-            alt="logo"
-            width={32}
-            height={32}
-            className="sm:w-10 sm:h-10"
-          />
-
+          <Link href="/" className="flex items-center">
+            <Image
+              src={"/logo.png"}
+              alt="logo"
+              width={32}
+              height={32}
+              className="sm:w-10 sm:h-10"
+            />
+          </Link>
           {/* Desktop Navigation */}
           <ul className="hidden lg:flex items-center gap-5 ml-6 xl:ml-10">
             {navItems.map((item) => (
