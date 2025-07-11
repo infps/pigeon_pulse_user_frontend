@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
-import { signUp } from "@/lib/auth-client";
+import { signIn, signUp } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
@@ -161,7 +161,14 @@ export default function page() {
       </Form>
       <p className="text-center text-sm text-muted-foreground">OR</p>
       <div className="flex items-center justify-center space-x-10">
-        <button>
+        <button
+          onClick={async () =>
+            signIn.social({
+              provider: "google",
+              callbackURL: "/",
+            })
+          }
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             x="0px"

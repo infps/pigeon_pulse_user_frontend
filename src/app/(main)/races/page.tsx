@@ -1,4 +1,5 @@
 "use client";
+import ErrorDisplay from "@/components/ErrorDisplay";
 import RaceComponent from "@/components/RaceComponent";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,10 +27,15 @@ export default function page() {
     return <div>Loading...</div>;
   }
   if (isError && error) {
-    return <div>Error: {error.message}</div>;
-  }
-  if (isSuccess && !data) {
-    return <div>No data found</div>;
+    return (
+      <ErrorDisplay
+        title="Failed to Load Races"
+        message="We couldn't load the upcoming races. Please try again."
+        error={error as Error}
+        onRetry={() => window.location.reload()}
+        size="lg"
+      />
+    );
   }
   const races: ListRaces[] = data?.data || [];
 

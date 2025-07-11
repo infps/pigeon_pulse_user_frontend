@@ -38,17 +38,6 @@ export default function page() {
     );
   }
   
-  if (isSuccess && !data) {
-    return (
-      <ErrorDisplay
-        title="No Data Available"
-        message="No race data is currently available."
-        showRetry={false}
-        size="md"
-      />
-    );
-  }
-  
   const races: ListRaces[] = data?.data || [];
   
   return (

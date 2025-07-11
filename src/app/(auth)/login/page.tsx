@@ -133,7 +133,14 @@ export default function page() {
       </Form>
       <p className="text-center text-sm text-muted-foreground">OR</p>
       <div className="flex items-center justify-center space-x-10">
-        <button>
+        <button
+          onClick={async() =>
+            signIn.social({
+              provider: "google",
+              callbackURL: "/",
+            })
+          }
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             x="0px"
