@@ -24,6 +24,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "agn-bucket-123.s3.us-east-1.amazonaws.com",
       },
+      {
+        protocol: "https",
+        hostname:"cdn.weatherapi.com",
+        pathname:"/**",
+      }
     ],
   },
   eslint: {
