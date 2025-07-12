@@ -54,6 +54,7 @@ export default function Header() {
     { name: "Result", href: "/result" },
     { name: "About", href: "/about" },
     { name: "Contact Us", href: "/contact" },
+    { name: "Delphi", href: "/delphi" },
   ];
   const { userData } = useUserStore();
 

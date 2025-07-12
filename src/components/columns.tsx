@@ -350,3 +350,34 @@ export const MyPaymentsColumns: ColumnDef<MyPayments>[] = [
     },
   },
 ];
+
+export type FireBird = {
+  ID_RACE_ITEM: number | null;
+  BIRD_POSITION: number | null;
+  ARRIVAL_TIME: string | null;
+  BIRD_DROP: number | null;
+  PRIZE_VALUE: number | null;
+};
+
+export const FireBirdsColumns: ColumnDef<FireBird>[] = [
+  {
+    accessorKey: "ID_RACE_ITEM",
+    header: "ID_RACE_ITEM",
+  },
+  {
+    accessorKey: "BIRD_POSITION",
+    header: "BIRD_POSITION",
+  },
+  {
+    accessorKey: "ARRIVAL_TIME",
+    header: "ARRIVAL_TIME",
+  },
+  {
+    accessorKey: "BIRD_DROP",
+    header: "BIRD_DROP",
+  },
+  {
+    accessorKey: "PRIZE_VALUE",
+    header: "PRIZE_VALUE",
+  },
+];
