@@ -381,3 +381,226 @@ export const FireBirdsColumns: ColumnDef<FireBird>[] = [
     header: "PRIZE_VALUE",
   },
 ];
+
+export type FireBirdRaceResult = {
+  RACE_NUMBER: number;
+  LOCATION: string;
+  DISTANCE: number;
+  START_TIME: string;
+  SUNRISE: string;
+  SUNSET: string;
+};
+
+export const FireBirdRaceResultsColumns: ColumnDef<FireBirdRaceResult>[] = [
+  {
+    accessorKey: "RACE_NUMBER",
+    header: "Race Number",
+  },
+  {
+    accessorKey: "LOCATION",
+    header: "Location",
+  },
+  {
+    accessorKey: "DISTANCE",
+    header: "Distance (km)",
+  },
+  {
+    accessorKey: "START_TIME",
+    header: "Start Time",
+    accessorFn: (row) => {
+      const date = new Date(row.START_TIME);
+      return date.toLocaleString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h24",
+      });
+    },
+  },
+  {
+    accessorKey: "SUNRISE",
+    header: "Sunrise",
+    accessorFn: (row) => {
+      const date = new Date(row.SUNRISE);
+      return date.toLocaleString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h24",
+      });
+    },
+  },
+  {
+    accessorKey: "SUNSET",
+    header: "Sunset",
+    accessorFn: (row) => {
+      const date = new Date(row.SUNSET);
+      return date.toLocaleString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h24",
+      });
+    },
+  },
+];
+
+export type FireBirdBreeder = {
+  ID_BREEDER: number;
+  STATUS: number;
+  FIRST_NAME: string;
+  LAST_NAME: string;
+  COUNTRY: string | null;
+  SOCIAL_SECURITY_NUMBER: string;
+  TAX_NUMBER: string;
+  ADDRESS_1: string;
+  CITY_1: string;
+  ZIP_1: string;
+  STATE_1: string;
+  PHONE: string;
+  CELL: string;
+  FAX: string;
+  SMS: string;
+  EMAIL: string;
+  EMAIL_2: string;
+  WEB_ADDRESS: string;
+};
+
+export const FireBirdBreedersColumns: ColumnDef<FireBirdBreeder>[] = [
+  {
+    accessorKey: "ID_BREEDER",
+    header: "ID_BREEDER",
+  },
+  {
+    accessorKey: "STATUS",
+    header: "STATUS",
+  },
+  {
+    header: "Name",
+    accessorFn: (row) => `${row.FIRST_NAME} ${row.LAST_NAME}`,
+    id: "name",
+  },
+  {
+    accessorKey: "COUNTRY",
+    header: "Country",
+  },
+  {
+    accessorKey: "SOCIAL_SECURITY_NUMBER",
+    header: "Social Security Number",
+  },
+  {
+    accessorKey: "TAX_NUMBER",
+    header: "Tax Number",
+  },
+  {
+    accessorKey: "ADDRESS_1",
+    header: "Address Line 1",
+  },
+  {
+    accessorKey: "CITY_1",
+    header: "City",
+  },
+  {
+    accessorKey: "ZIP_1",
+    header: "ZIP Code",
+  },
+  {
+    accessorKey: "STATE_1",
+    header: "State/Province",
+  },
+  {
+    accessorKey: "PHONE",
+    header: "Phone Number",
+  },
+  {
+    accessorKey: "CELL",
+    header: "Cell Number",
+  },
+  {
+    accessorKey: "FAX",
+    header: "Fax Number",
+  },
+  {
+    accessorKey: "SMS",
+    header: "SMS Enabled?",
+  },
+  {
+    accessorKey: "EMAIL",
+    header: "Email Address",
+  },
+  {
+    accessorKey: "EMAIL_2",
+    header: "Secondary Email Address",
+  },
+  {
+    accessorKey: "WEB_ADDRESS",
+    header: "Web Address",
+  },
+];
+
+export type FireBirdEventInventory = {
+  LOFT: string;
+  BIRD_NO: number;
+  BREEDER: number;
+  SIGN_IN_DATE: string;
+  WAITING: number;
+  WAITING_DATE: string | null;
+  RESERVED_BIRDS: number;
+  PERCH_FEE_VALUE: number;
+  BIRDS_IN_LOFT: number;
+};
+
+export const FireBirdEventInventoryColumns: ColumnDef<FireBirdEventInventory>[] =
+  [
+    {
+      accessorKey: "LOFT",
+      header: "Loft",
+    },
+    {
+      accessorKey: "BIRD_NO",
+      header: "Bird No.",
+    },
+    {
+      accessorKey: "BREEDER",
+      header: "Breeder",
+    },
+    {
+      accessorKey: "SIGN_IN_DATE",
+      header: "Sign In Date",
+    },
+    {
+      accessorKey: "WAITING",
+      header: "Waiting",
+    },
+    {
+      accessorKey: "WAITING_DATE",
+      header: "Waiting Date",
+      cell: ({ row }) => {
+        const waitingDate = row.original.WAITING_DATE;
+        if (waitingDate === null) return "-";
+        const date = new Date(waitingDate);
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        });
+      },
+    },
+    {
+      accessorKey: "RESERVED_BIRDS",
+      header: "Reserved Birds",
+    },
+    {
+      accessorKey: "PERCH_FEE_VALUE",
+      header: "Perch Fee Value",
+      cell: ({ row }) => {
+        const value = row.original.PERCH_FEE_VALUE;
+        if (value === null) return "-";
+        return `$${value.toFixed(2)}`;
+      },
+    },
+    {
+      accessorKey: "BIRDS_IN_LOFT",
+      header: "Birds in Loft",
+    },
+  ];

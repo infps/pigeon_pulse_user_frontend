@@ -7,7 +7,11 @@ const raceEndpoints = {
 };
 
 const fireBirdEndpoints = {
-  base: "/firebird",
+  base: "/firebird/race-item",
+  breeders: "/firebird/breeders",
+  raceResult:"/firebird/race-result",
+  eventInventory: "/firebird/event-inventory",
+  events: "/firebird/events",
 };
 
 const loftEndpoints = {

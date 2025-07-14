@@ -12,3 +12,30 @@ export function listfirebird({ params }: { params: Record<string, string> }) {
     params,
   });
 }
+
+export function listFirebirdBreeders() {
+  return useApiRequest({
+    endpoint: apiEndpoints.fireBirdEndpoints.breeders,
+    queryKey: ["firebird", "breeders"],
+  });
+}
+export function listFirebirdRaceResults() {
+  return useApiRequest({
+    endpoint: apiEndpoints.fireBirdEndpoints.raceResult,
+    queryKey: ["firebird", "raceResult"],
+  });
+}
+
+export function listFirebirdEventInventory() {
+  return useApiRequest({
+    endpoint: apiEndpoints.fireBirdEndpoints.eventInventory,
+    queryKey: ["firebird", "eventInventory"],
+  });
+}
+
+export function listFirebirdEvents() {
+  return useApiRequest({
+    endpoint: apiEndpoints.fireBirdEndpoints.events,
+    queryKey: ["firebird", "events"],
+  });
+}

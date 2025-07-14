@@ -1,25 +1,20 @@
-"use client";
+import Link from "next/link";
 
-import { FireBird, FireBirdsColumns } from "@/components/columns";
-import { DataTable } from "@/components/data-table";
-import { listfirebird } from "@/lib/api/firebird";
-
-export default function Page() {
-  const { data, isError, error, isPending } = listfirebird({
-    params: {},
-  });
-
-  if (isPending) {
-    return <div>Loading...</div>;
-  }
-  if (isError && error) {
-    return <div>Error: {error.message}</div>;
-  }
-  const fireBirds: FireBird[] = data?.data || [];
+export default function page() {
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Firebird List</h1>
-      <DataTable columns={FireBirdsColumns} data={fireBirds} />
+    <div>
+      <h1 className="text-3xl font-bold text-center mt-10">Delphi Page</h1>
+      <div className="max-w-5xl mx-auto py-10 grid grid-cols-3 gap-10 text-black text-center">
+        <Link href="/delphi/race-results">
+          <div className="border rounded-lg p-10">Race Results</div>
+        </Link>
+        <Link href={"/delphi/breeders"}>
+          <div className="border rounded-lg p-10">Breeders Address Book</div>
+        </Link>
+        <Link href={"/delphi/event-inventory"}>
+          <div className="border rounded-lg p-10">Event Inventory</div>
+        </Link>
+      </div>
     </div>
   );
 }
