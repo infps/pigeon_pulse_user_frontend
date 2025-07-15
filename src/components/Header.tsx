@@ -8,44 +8,44 @@ import { Menu, X } from "lucide-react";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [weather, setWeather] = useState<null | {
-    temp_c: number;
-    temp_f: number;
-    condition: string;
-    icon: string;
-    wind_kph: number;
-    wind_mph: number;
-  }>(null);
+  // const [weather, setWeather] = useState<null | {
+  //   temp_c: number;
+  //   temp_f: number;
+  //   condition: string;
+  //   icon: string;
+  //   wind_kph: number;
+  //   wind_mph: number;
+  // }>(null);
 
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
+  // useEffect(() => {
+  //   navigator.geolocation.getCurrentPosition(
+  //     async (position) => {
+  //       const lat = position.coords.latitude;
+  //       const lon = position.coords.longitude;
 
-        const url = `https://api.weatherapi.com/v1/current.json?key=ff77f311fc10423e8c990536251207&q=${lat},${lon}&aqi=no`;
+  //       const url = `https://api.weatherapi.com/v1/current.json?key=ff77f311fc10423e8c990536251207&q=${lat},${lon}&aqi=no`;
 
-        try {
-          const res = await fetch(url);
-          const data = await res.json();
+  //       try {
+  //         const res = await fetch(url);
+  //         const data = await res.json();
 
-          setWeather({
-            temp_c: data.current.temp_c,
-            temp_f: data.current.temp_f,
-            condition: data.current.condition.text,
-            icon: data.current.condition.icon, // already contains full path except https:
-            wind_kph: data.current.wind_kph,
-            wind_mph: data.current.wind_mph,
-          });
-        } catch (error) {
-          console.error("Weather fetch error:", error);
-        }
-      },
-      (err) => {
-        console.error("Location permission denied:", err);
-      }
-    );
-  }, []);
+  //         setWeather({
+  //           temp_c: data.current.temp_c,
+  //           temp_f: data.current.temp_f,
+  //           condition: data.current.condition.text,
+  //           icon: data.current.condition.icon, // already contains full path except https:
+  //           wind_kph: data.current.wind_kph,
+  //           wind_mph: data.current.wind_mph,
+  //         });
+  //       } catch (error) {
+  //         console.error("Weather fetch error:", error);
+  //       }
+  //     },
+  //     (err) => {
+  //       console.error("Location permission denied:", err);
+  //     }
+  //   );
+  // }, []);
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -62,27 +62,27 @@ export default function Header() {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const WeatherWidget = ({ className = "" }: { className?: string }) => {
-    if (!weather) return null;
+  // const WeatherWidget = ({ className = "" }: { className?: string }) => {
+  //   if (!weather) return null;
 
-    return (
-      <div className="flex items-center gap-2 w-max">
-        <Image
-          width={24}
-          height={24}
-          src={`https:${weather.icon}`}
-          alt={weather.condition}
-          className="w-6 h-6"
-        />
-        <span className="text-muted-foreground text-[11px] sm:text-sm text-wrap">
-          {weather.temp_c}°C / {weather.temp_f}°F
-        </span>
-        <span className="text-muted-foreground text-[11px] sm:text-sm">
-          | Wind: {weather.wind_kph} km/h ({weather.wind_mph} mph)
-        </span>
-      </div>
-    );
-  };
+  //   return (
+  //     <div className="flex items-center gap-2 w-max">
+  //       <Image
+  //         width={24}
+  //         height={24}
+  //         src={`https:${weather.icon}`}
+  //         alt={weather.condition}
+  //         className="w-6 h-6"
+  //       />
+  //       <span className="text-muted-foreground text-[11px] sm:text-sm text-wrap">
+  //         {weather.temp_c}°C / {weather.temp_f}°F
+  //       </span>
+  //       <span className="text-muted-foreground text-[11px] sm:text-sm">
+  //         | Wind: {weather.wind_kph} km/h ({weather.wind_mph} mph)
+  //       </span>
+  //     </div>
+  //   );
+  // };
 
   return (
     <div className="relative bg-white">
@@ -115,7 +115,7 @@ export default function Header() {
 
         {/* Desktop Weather and Auth Buttons */}
         <div className="hidden lg:flex items-center gap-3">
-          <WeatherWidget />
+          {/* <WeatherWidget /> */}
           {userData.session ? (
             <Button asChild>
               <Link href={"/profile"}>Profile</Link>
@@ -134,7 +134,7 @@ export default function Header() {
 
         {/* Mobile Weather and Menu Button */}
         <div className="lg:hidden flex items-center">
-          <WeatherWidget />
+          {/* <WeatherWidget /> */}
           <button
             onClick={toggleMobileMenu}
             className="p-2 rounded-md hover:bg-gray-100 transition-colors"

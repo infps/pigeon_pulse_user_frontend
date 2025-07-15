@@ -6,8 +6,9 @@ import ErrorDisplay from "@/components/ErrorDisplay";
 import { getRace, listRaces } from "@/lib/api/race";
 import { ListRaces } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 export default function page({
   params,
@@ -128,6 +129,8 @@ export default function page({
         </div>
       </div>
 
+      <WeatherReport query={race.startLocation} />
+
       {/* Rules and Regulations - Responsive */}
       <div className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-4xl mx-auto">
@@ -143,6 +146,83 @@ export default function page({
       {/* More Races Section */}
       <div className="bg-gray-50">
         <MoreRaces />
+      </div>
+    </div>
+  );
+}
+
+function WeatherReport({ query }: { query: string }) {
+  type ForecastDay = {
+    date: string;
+    day: {
+      maxtemp_c: number;
+      mintemp_c: number;
+      condition: {
+        text: string;
+        icon: string;
+      };
+      daily_chance_of_rain: string;
+    };
+  };
+
+  const [forecast, setForecast] = useState<ForecastDay[]>([]);
+  const [locationName, setLocationName] = useState("");
+
+  useEffect(() => {
+    const fetchForecast = async () => {
+      try {
+        const url = `https://api.weatherapi.com/v1/forecast.json?key=ff77f311fc10423e8c990536251207&q=${query}&days=7&aqi=no&alerts=no`;
+        const res = await fetch(url);
+        const data = await res.json();
+        console.log("Weather data:", data);
+        setForecast(data.forecast.forecastday);
+        setLocationName(data.location.name);
+      } catch (err) {
+        console.error("Failed to fetch forecast", err);
+      }
+    };
+
+    fetchForecast();
+  }, [query]);
+
+  return (
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-6 text-center">
+        3-Day Forecast for {locationName || query}
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {forecast.map((day) => (
+          <div
+            key={day.date}
+            className="bg-card p-4 rounded-xl shadow hover:shadow-lg transition text-center"
+          >
+            <p className="font-semibold mb-2">
+              {new Date(day.date).toLocaleDateString("en-US", {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+              })}
+            </p>
+            <div className="flex justify-center">
+              <Image
+                src={`https:${day.day.condition.icon}`}
+                alt={day.day.condition.text}
+                width={48}
+                height={48}
+              />
+            </div>
+            <p className="text-sm text-muted-foreground mt-1">
+              {day.day.condition.text}
+            </p>
+            <p className="font-medium mt-2">
+              {day.day.maxtemp_c}° / {day.day.mintemp_c}°
+            </p>
+            <p className="text-xs text-blue-600 mt-1">
+              💧 {day.day.daily_chance_of_rain}% chance of rain
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );
