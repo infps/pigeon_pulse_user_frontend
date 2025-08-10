@@ -1,7 +1,7 @@
 const authEndpoints = {
-  login: "/auth/admin/login",
-  logout: "/auth/admin/logout",
-  signup: "/auth/admin/signup",
+  login: "/auth/breeder/login",
+  logout: "/auth/breeder/logout",
+  signup: "/auth/breeder/signup",
   session: "/auth/session",
 };
 
