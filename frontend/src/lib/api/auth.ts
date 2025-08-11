@@ -5,7 +5,7 @@ export function useLogin() {
   return useApiRequest({
     endpoint: apiEndpoints.auth.login,
     method: "POST",
-    invalidateKeys: [{ queryKey: ["currentUser"] }],
+    invalidateKeys: [{ queryKey: ["session"] }],
   });
 }
 
@@ -13,21 +13,21 @@ export function useSignup() {
   return useApiRequest({
     endpoint: apiEndpoints.auth.signup,
     method: "POST",
-    invalidateKeys: [{ queryKey: ["currentUser"] }],
+    invalidateKeys: [{ queryKey: ["session"] }],
   });
 }
 export function useLogout() {
   return useApiRequest({
     endpoint: apiEndpoints.auth.logout,
     method: "POST",
-    invalidateKeys: [{ queryKey: ["currentUser"] }],
+    invalidateKeys: [{ queryKey: ["session"] }],
   });
 }
 
-export function useCurrentUser() {
+export function useSession() {
   return useApiRequest({
     endpoint: apiEndpoints.auth.session,
     method: "GET",
-    queryKey: ["currentUser"],
+    queryKey: ["session"],
   });
 }

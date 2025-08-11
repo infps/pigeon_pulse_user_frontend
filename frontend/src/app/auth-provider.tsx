@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/store";
-import { useCurrentUser } from "@/lib/api/auth";
+import { useSession } from "@/lib/api/auth";
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -18,7 +18,7 @@ export function AuthProvider({
   const router = useRouter();
   const { user, isAuthenticated, isLoading, setUser } = useAuthStore();
 
-  const { data: userData, isError, isPending } = useCurrentUser();
+  const { data: userData, isError, isPending } = useSession();
   useEffect(() => {
     if (!isPending) {
       if (userData?.data) {
