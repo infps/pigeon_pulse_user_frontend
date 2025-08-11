@@ -21,9 +21,19 @@ const eventsEndpoints = {
   more: (id: string) => `/events/${id}/more`,
 };
 
+const eventInventoryEndpoints = {
+  create: "/event-inventory",
+  getmyevents: "/event-inventory/my-events",
+};
+
+const paymentEndpoints = {
+  capture: "/payments/capture",
+};
 export const apiEndpoints = {
   auth: authEndpoints,
   user: userEndpoints,
   birds: birdsEndpoints,
   events: eventsEndpoints,
+  eventInventory: eventInventoryEndpoints,
+  payment: paymentEndpoints,
 };

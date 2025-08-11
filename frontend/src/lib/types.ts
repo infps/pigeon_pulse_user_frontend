@@ -70,4 +70,19 @@ type Distribution = {
   percentage: number;
 };
 
-export type { User, CurrentUser, Bird, ListEvents, Event };
+type MyEvents = {
+  event: {
+    date: Date;
+    id: string;
+    name: string;
+  };
+  payment: {
+    status: string;
+    paymentValue: number;
+    transactionId: string | null;
+  } | null;
+  reserved_birds: number;
+  loft: string;
+};
+
+export type { User, CurrentUser, Bird, ListEvents, Event, MyEvents };

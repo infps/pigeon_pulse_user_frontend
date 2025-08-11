@@ -5,11 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useListBirds } from "@/lib/api/bird";
 import { useGetEventById } from "@/lib/api/event";
+import { useCreateEventInventory } from "@/lib/api/eventInventory";
+import { useCapturePayment } from "@/lib/api/payment";
 import { Bird, Event } from "@/lib/types";
 import { useAuthStore } from "@/store/store";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 export default function page({
   params,
@@ -58,9 +61,89 @@ function RegisterForm({ eventId }: { eventId: string }) {
           selectedBirds={selectedBirds}
           setSelectedBirds={setSelectedBirds}
         />
-        {/* {selectedBirds.length > 0 && (
-          <PaymentInformation race={race} selectedBirds={selectedBirds} />
-        )} */}
+        {selectedBirds.length > 0 && (
+          <PaymentInformation event={event} selectedBirds={selectedBirds} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PaymentInformation({
+  event,
+  selectedBirds,
+}: {
+  event: Event;
+  selectedBirds: Bird[];
+}) {
+  const totalAmount = event.feeSchema.entryFee * selectedBirds.length;
+
+  return (
+    <div className="p-4 sm:p-6 lg:p-8 xl:p-10 w-full border-t bg-gray-50">
+      <h2 className="font-bold text-secondary mb-6 text-xl sm:text-2xl md:text-3xl lg:text-4xl">
+        Payment Information
+      </h2>
+
+      <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+        <div className="space-y-4 mb-6">
+          <div className="flex justify-between items-center py-2 border-b">
+            <span className="text-gray-600 text-sm sm:text-base">
+              Entry Fee per Bird:
+            </span>
+            <span className="font-medium text-sm sm:text-base">
+              ${event.feeSchema.entryFee.toFixed(2)}
+            </span>
+          </div>
+          <div className="flex justify-between items-center py-2 border-b">
+            <span className="text-gray-600 text-sm sm:text-base">
+              Number of Birds:
+            </span>
+            <span className="font-medium text-sm sm:text-base">
+              {selectedBirds.length}
+            </span>
+          </div>
+          <div className="flex justify-between items-center py-3 border-b-2 border-secondary">
+            <span className="text-base sm:text-lg font-semibold text-secondary">
+              Total Amount:
+            </span>
+            <span className="text-lg sm:text-xl font-bold text-secondary">
+              ${totalAmount.toFixed(2)}
+            </span>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <h4 className="font-medium text-gray-700 mb-3 text-sm sm:text-base">
+            Registered Birds:
+          </h4>
+          <div className="max-h-48 overflow-y-auto space-y-2">
+            {selectedBirds.map((bird, index) => (
+              <div
+                key={bird.id}
+                className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded text-sm"
+              >
+                <span className="flex-1 truncate">
+                  {index + 1}. {bird.birdName} - ({bird.color})
+                </span>
+                <span className="font-medium text-green-600 ml-2">
+                  ${event.feeSchema.entryFee.toFixed(2)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-8 flex w-full justify-center">
+          <div className="w-full max-w-md">
+            <PaypalButton eventId={event.id} selectedBirds={selectedBirds} />
+          </div>
+        </div>
+
+        <div className="mt-4 text-center">
+          <p className="text-xs text-gray-500">
+            Secure payment processing • All payments are encrypted and secure
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -285,7 +368,6 @@ function CountDown({ event }: { event: Event }) {
   );
 }
 
-
 function PaypalButton({
   eventId,
   selectedBirds,
@@ -297,24 +379,21 @@ function PaypalButton({
   const {
     mutateAsync: RegisterEventMutateAsync,
     isPending: RegisterEventPending,
-  } = registerEvent({
-    params: {},
-    eventId,
-  });
+  } = useCreateEventInventory();
   const {
     mutateAsync: CapturePaymentMutateAsync,
     isPending: CapturePaymentPending,
-  } = capturePayment({
-    params: {},
-  });
+  } = useCapturePayment();
   const router = useRouter();
-  
+
   // Validate PayPal client ID
   const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
   if (!clientId) {
     return (
       <div className="text-center p-4 bg-red-50 border border-red-200 rounded-lg">
-        <p className="text-red-600 text-sm">Payment system is temporarily unavailable</p>
+        <p className="text-red-600 text-sm">
+          Payment system is temporarily unavailable
+        </p>
       </div>
     );
   }
@@ -328,28 +407,31 @@ function PaypalButton({
   async function onCreateOrder(): Promise<string> {
     try {
       setIsProcessing(true);
-      
-      if (!RegisterRaceMutateAsync) {
+
+      if (!RegisterEventMutateAsync) {
         throw new Error("Registration service unavailable");
       }
-      
+
       if (selectedBirds.length === 0) {
         throw new Error("No birds selected for registration");
       }
 
-      const birdId: string[] = selectedBirds.map((bird) => bird.id);
-      const { data, error } = await RegisterRaceMutateAsync({ birdId });
-      
+      const birds: string[] = selectedBirds.map((bird) => bird.id);
+      const { data, error } = await RegisterEventMutateAsync({
+        birds,
+        eventId,
+      });
+
       if (error) {
         toast.error(error);
         throw new Error("Failed to create order: " + error);
       }
-      
+
       const orderId: string = data?.data?.orderId;
       if (!orderId) {
         throw new Error("No order ID received");
       }
-      
+
       toast.info("Order created successfully");
       return orderId;
     } catch (error: any) {
@@ -363,7 +445,7 @@ function PaypalButton({
   async function onApprove(data: any) {
     try {
       console.log("PayPal approval data:", data);
-      
+
       if (!data.orderID) {
         throw new Error("No order ID provided by PayPal");
       }
@@ -375,8 +457,10 @@ function PaypalButton({
         throw new Error("Payment capture service unavailable");
       }
 
-      const { data: captureData, error } = await CapturePaymentMutateAsync({ orderID });
-      
+      const { data: captureData, error } = await CapturePaymentMutateAsync({
+        orderId: orderID,
+      });
+
       if (error) {
         console.error("Error capturing payment:", error);
         // toast.error(error);
@@ -385,12 +469,11 @@ function PaypalButton({
 
       console.log("Payment captured successfully:", captureData);
       toast.success("Payment successful! Registration complete.");
-      
+
       // Successful payment - redirect to appropriate page
       setTimeout(() => {
         router.push(`/profile/my-races`);
       }, 2000);
-      
     } catch (error: any) {
       console.error("Error during payment capture:", error);
       // toast.error(error.message || "Payment failed. Please try again.");
@@ -402,15 +485,15 @@ function PaypalButton({
   async function onError(error: any) {
     console.error("PayPal Button Error:", error);
     setIsProcessing(false);
-    
+
     let errorMessage = "Payment failed. Please try again.";
-    
+
     if (error?.message) {
       errorMessage = error.message;
-    } else if (typeof error === 'string') {
+    } else if (typeof error === "string") {
       errorMessage = error;
     }
-    
+
     toast.error(errorMessage);
   }
 
@@ -420,7 +503,8 @@ function PaypalButton({
     toast.info("Payment cancelled");
   }
 
-  const isDisabled = isProcessing || RegisterRacePending || CapturePaymentPending;
+  const isDisabled =
+    isProcessing || RegisterEventPending || CapturePaymentPending;
 
   return (
     <div className="w-full">
@@ -428,20 +512,22 @@ function PaypalButton({
         <div className="mb-4 text-center">
           <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
             <div className="animate-spin rounded-full h-3 w-3 border-b border-blue-600 mr-2"></div>
-            {RegisterRacePending ? "Creating order..." : 
-             CapturePaymentPending ? "Processing payment..." : 
-             "Processing..."}
+            {RegisterEventPending
+              ? "Creating order..."
+              : CapturePaymentPending
+              ? "Processing payment..."
+              : "Processing..."}
           </div>
         </div>
       )}
-      
+
       <PayPalScriptProvider options={initialOptions}>
         <PayPalButtons
-          style={{ 
-            layout: "vertical", 
-            color: "blue", 
+          style={{
+            layout: "vertical",
+            color: "blue",
             shape: "rect",
-            height: 45
+            height: 45,
           }}
           createOrder={onCreateOrder}
           onApprove={onApprove}
@@ -451,10 +537,11 @@ function PaypalButton({
           disabled={isDisabled}
         />
       </PayPalScriptProvider>
-      
+
       <div className="mt-3 text-center">
         <p className="text-xs text-gray-500">
-          You will be redirected to your race registrations after successful payment
+          You will be redirected to your race registrations after successful
+          payment
         </p>
       </div>
     </div>
