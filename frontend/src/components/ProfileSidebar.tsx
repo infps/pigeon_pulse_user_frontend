@@ -13,6 +13,8 @@ export default function ProfileSidebar() {
   const handleLogout = async () => {
     if (!logout) return;
     try {
+      document.cookie =
+        "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
       const { data, error } = await logout({});
       if (error) {
         toast.error("Failed to log out");

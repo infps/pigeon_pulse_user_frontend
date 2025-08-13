@@ -53,7 +53,8 @@ export default function page() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       if (!signup) return;
-      await signup(values);
+      const { data } = await signup(values);
+      document.cookie = `accessToken=${data.data.token}; secure; SameSite=Strict`;
       toast.success("Signup successful!");
       router.push("/");
     } catch (error: any) {

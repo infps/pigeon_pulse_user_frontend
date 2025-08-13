@@ -3,13 +3,13 @@
   "/favicon.ico/route": "/favicon.ico",
   "/(auth)/login/page": "/login",
   "/(auth)/signup/page": "/signup",
+  "/(main)/about/page": "/about",
   "/(main)/contact/page": "/contact",
   "/(main)/events/[eventId]/page": "/events/[eventId]",
-  "/(main)/about/page": "/about",
   "/(main)/events/[eventId]/register/page": "/events/[eventId]/register",
   "/(main)/events/page": "/events",
   "/(main)/page": "/",
   "/(main)/(protected)/profile/my-events/page": "/profile/my-events",
-  "/(main)/(protected)/profile/page": "/profile",
-  "/(main)/(protected)/profile/birds/page": "/profile/birds"
+  "/(main)/(protected)/profile/birds/page": "/profile/birds",
+  "/(main)/(protected)/profile/page": "/profile"
 }
