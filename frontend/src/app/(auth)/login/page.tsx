@@ -39,7 +39,7 @@ export default function page() {
     try {
       if (!login) return;
       const { data } = await login(values);
-      document.cookie = `accessToken=${data.data.token}; secure; SameSite=Strict`;
+      localStorage.setItem("accessToken", data.data.token);
       toast.success("Login successful!");
       router.push("/");
     } catch (error: any) {

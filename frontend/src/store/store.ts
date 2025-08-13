@@ -9,6 +9,7 @@ interface AuthState {
   setUser: (user: User) => void;
   clearAuth: () => void;
   setLoading: (loading: boolean) => void;
+  checkAuthFromStorage: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>()((set, get) => ({
@@ -23,12 +24,25 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       isLoading: false,
     }),
 
-  clearAuth: () =>
+  clearAuth: () => {
+    // Clear token from localStorage
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("accessToken");
+    }
     set({
       user: null,
       isAuthenticated: false,
       isLoading: false,
-    }),
+    });
+  },
 
   setLoading: (loading: boolean) => set({ isLoading: loading }),
+
+  checkAuthFromStorage: () => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("accessToken");
+      return !!token;
+    }
+    return false;
+  },
 }));

@@ -8,21 +8,26 @@ import { toast } from "sonner";
 export default function ProfileSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { setUser } = useAuthStore();
+  const { clearAuth } = useAuthStore();
   const { mutateAsync: logout } = useLogout();
   const handleLogout = async () => {
     if (!logout) return;
     try {
-      document.cookie =
-        "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+      // Clear token from localStorage and auth state
+      clearAuth();
+      
       const { data, error } = await logout({});
       if (error) {
         toast.error("Failed to log out");
         return;
       }
       toast.success("Logged out successfully");
+      router.push("/login");
     } catch (error) {
       toast.error("An error occurred while logging out");
+      // Even if the API call fails, clear local auth state and redirect
+      clearAuth();
+      router.push("/login");
     }
   };
 

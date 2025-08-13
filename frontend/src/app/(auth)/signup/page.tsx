@@ -54,7 +54,7 @@ export default function page() {
     try {
       if (!signup) return;
       const { data } = await signup(values);
-      document.cookie = `accessToken=${data.data.token}; secure; SameSite=Strict`;
+      localStorage.setItem("accessToken", data.data.token);
       toast.success("Signup successful!");
       router.push("/");
     } catch (error: any) {

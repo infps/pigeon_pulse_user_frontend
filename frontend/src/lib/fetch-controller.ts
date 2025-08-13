@@ -37,6 +37,22 @@ const apiClient = axios.create({
   },
 });
 
+// Request interceptor to add Authorization header
+apiClient.interceptors.request.use(
+  (config) => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Response interceptor to handle 401 errors
 apiClient.interceptors.response.use(
   (response) => response,
@@ -49,6 +65,11 @@ apiClient.interceptors.response.use(
       if (!currentPath.includes("/login") && !currentPath.includes("/signup")) {
         const { clearAuth } = useAuthStore.getState();
         clearAuth();
+        
+        // Clear token from localStorage
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("accessToken");
+        }
 
         window.location.href = `/login`;
       }
