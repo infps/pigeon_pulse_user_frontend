@@ -1,0 +1,15 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/(auth)/signup/page": "app/(auth)/signup/page.js",
+  "/(auth)/login/page": "app/(auth)/login/page.js",
+  "/(main)/about/page": "app/(main)/about/page.js",
+  "/(main)/contact/page": "app/(main)/contact/page.js",
+  "/(main)/events/[eventId]/page": "app/(main)/events/[eventId]/page.js",
+  "/(main)/events/[eventId]/register/page": "app/(main)/events/[eventId]/register/page.js",
+  "/(main)/events/page": "app/(main)/events/page.js",
+  "/(main)/page": "app/(main)/page.js",
+  "/(main)/(protected)/profile/birds/page": "app/(main)/(protected)/profile/birds/page.js",
+  "/(main)/(protected)/profile/my-events/page": "app/(main)/(protected)/profile/my-events/page.js",
+  "/(main)/(protected)/profile/page": "app/(main)/(protected)/profile/page.js"
+}
