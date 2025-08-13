@@ -472,7 +472,7 @@ function PaypalButton({
 
       // Successful payment - redirect to appropriate page
       setTimeout(() => {
-        router.push(`/profile/my-races`);
+        router.push(`/profile/my-events`);
       }, 2000);
     } catch (error: any) {
       console.error("Error during payment capture:", error);

@@ -18,9 +18,9 @@ export default function Header() {
 
   const navItems = [
     { name: "Home", href: "/" },
-    { name: "Live Tracking", href: "/live-tracking" },
-    { name: "Races", href: "/races" },
-    { name: "Result", href: "/result" },
+    // { name: "Live Tracking", href: "/live-tracking" },
+    { name: "Events", href: "/events" },
+    // { name: "Result", href: "/result" },
     { name: "About", href: "/about" },
     { name: "Contact Us", href: "/contact" },
     { name: "Delphi", href: "/delphi" },
