@@ -88,10 +88,10 @@ function PaymentInformation({
         <div className="space-y-4 mb-6">
           <div className="flex justify-between items-center py-2 border-b">
             <span className="text-gray-600 text-sm sm:text-base">
-              Entry Fee per Bird:
+              Perch Fee per Bird:
             </span>
             <span className="font-medium text-sm sm:text-base">
-              ${event.feeSchema.entryFee.toFixed(2)}
+              ${event.feeSchema.perchFee.toFixed(2)}
             </span>
           </div>
           <div className="flex justify-between items-center py-2 border-b">
@@ -126,7 +126,7 @@ function PaymentInformation({
                   {index + 1}. {bird.birdName} - ({bird.color})
                 </span>
                 <span className="font-medium text-green-600 ml-2">
-                  ${event.feeSchema.entryFee.toFixed(2)}
+                  ${event.feeSchema.perchFee.toFixed(2)}
                 </span>
               </div>
             ))}

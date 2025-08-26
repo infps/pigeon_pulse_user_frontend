@@ -8,3 +8,11 @@ export function useCapturePayment() {
     invalidateKeys: [{ queryKey: ["payments"] }],
   });
 }
+
+export function useGetMyPayments() {
+  return useApiRequest({
+    endpoint: apiEndpoints.payment.my,
+    method: "GET",
+    queryKey: ["payments"],
+  });
+}

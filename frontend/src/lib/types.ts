@@ -58,6 +58,7 @@ type Event = {
     hs2Fee: number;
     hs3Fee: number;
     finalRaceFee: number;
+    perchFee: number;
   };
   finalRacePrizeSchema: {
     distributions: Distribution[];
@@ -76,13 +77,38 @@ type MyEvents = {
     id: string;
     name: string;
   };
-  payment: {
-    status: string;
-    paymentValue: number;
-    transactionId: string | null;
-  } | null;
+  registration_date: Date;
   reserved_birds: number;
   loft: string;
 };
 
-export type { User, CurrentUser, Bird, ListEvents, Event, MyEvents };
+type MyPayments = {
+  id: string;
+  paymentDate: Date | null;
+  paymentValue: number;
+  type:
+    | "PERCH_FEE"
+    | "ENTRY_FEE"
+    | "HOTSPOT_FEE_1"
+    | "HOTSPOT_FEE_2"
+    | "HOTSPOT_FEE_3"
+    | "FINAL_RACE_FEE"
+    | "OTHER";
+  status: string;
+  eventInventory: {
+    event: {
+      id: string;
+      name: string;
+      date: Date;
+    };
+  };
+};
+export type {
+  User,
+  CurrentUser,
+  Bird,
+  ListEvents,
+  Event,
+  MyEvents,
+  MyPayments,
+};

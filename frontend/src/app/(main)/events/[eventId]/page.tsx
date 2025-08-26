@@ -60,6 +60,14 @@ export default function page({
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <p className="text-xs sm:text-sm text-gray-600 mb-1">
+                Perch Fees
+              </p>
+              <p className="text-sm sm:text-base font-medium">
+                $ {event.feeSchema.perchFee}
+              </p>
+            </div>
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <p className="text-xs sm:text-sm text-gray-600 mb-1">
                 Final Race Fee
               </p>
               <p className="text-sm sm:text-base font-medium">
@@ -82,14 +90,6 @@ export default function page({
               </p>
               <p className="text-sm sm:text-base font-medium">
                 {event._count.EventInventoryItem}
-              </p>
-            </div>
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <p className="text-xs sm:text-sm text-gray-600 mb-1">
-                Short Name
-              </p>
-              <p className="text-sm sm:text-base font-medium">
-                {event.shortName}
               </p>
             </div>
             <Button
