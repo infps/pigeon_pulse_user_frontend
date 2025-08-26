@@ -1,48 +1,13 @@
 "use client";
-import RaceComponent from "@/components/RaceComponent";
+import EventComponent from "@/components/EventComponent";
 import { Button } from "@/components/ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import LoadingSpinner from "@/components/LoadingSpinner";
-import ErrorDisplay from "@/components/ErrorDisplay";
-import { listRaces } from "@/lib/api/race";
-import { ListRaces } from "@/lib/types";
+import { useListEvents } from "@/lib/api/event";
+import { ListEvents } from "@/lib/types";
 import Image from "next/image";
-import React from "react";
 
-export default function page() {
-  const { data, error, isError, isPending, isSuccess } = listRaces({
-    params: {
-      status: "UPCOMING",
-    },
-  });
-  
-  if (isPending) {
-    return <LoadingSpinner fullScreen message="Loading upcoming races..." />;
-  }
-  
-  if (isError && error) {
-    return (
-      <ErrorDisplay
-        title="Failed to Load Races"
-        message="We couldn't load the upcoming races. Please try again."
-        error={error as Error}
-        onRetry={() => window.location.reload()}
-        size="lg"
-      />
-    );
-  }
-  
-  const races: ListRaces[] = data?.data || [];
-  
+export default function Home() {
   return (
     <div className="min-h-screen">
-      {/* Hero Section - Responsive */}
       <div className="bg-gradient-to-r from-white to-primary h-48 flex items-center px-4 sm:px-6 lg:px-10 sm:h-64 lg:h-96 relative overflow-hidden">
         <div className="max-w-2xl z-10">
           <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-semibold tracking-wider uppercase leading-tight">
@@ -66,46 +31,20 @@ export default function page() {
           />
         </div>
       </div>
-
-      {/* Upcoming Races Section - Responsive */}
-      <div className="p-4 sm:p-6 lg:p-10">
-        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 sm:mb-6">
-          Upcoming Races
-        </h2>
-        
-        {races.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-sm sm:text-base">
-              No upcoming races at the moment. Check back soon!
-            </p>
-          </div>
-        ) : (
-          <div className="relative">
-            <Carousel className="overflow-hidden">
-              <CarouselContent className="-ml-2 md:-ml-4">
-                {races.map((race) => (
-                  <CarouselItem
-                    key={race.id}
-                    className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
-                  >
-                    <RaceComponent race={race} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="hidden sm:flex ml-12 lg:ml-14 bg-primary text-white hover:bg-primary/90" />
-              <CarouselNext className="hidden sm:flex mr-12 lg:mr-14 bg-primary text-white hover:bg-primary/90" />
-            </Carousel>
-          </div>
-        )}
+      <div className="py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
+        <div>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+            Latest Events
+          </h2>
+          <ListEventsComponent />
+        </div>
       </div>
-
-      {/* Live Pigeon Races Statistics Section - Responsive */}
       <div className="bg-primary/10 py-8 sm:py-12 lg:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="relative order-2 lg:order-1">
               <Image
-                src={"/pigeon_flying.png"}
+                src={"/pigeon_flying.webp"}
                 alt="pigeon flying"
                 width={500}
                 height={500}
@@ -126,7 +65,8 @@ export default function page() {
                 <div className="flex items-center justify-center lg:justify-start">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-3 flex-shrink-0"></div>
                   <span className="text-gray-700 text-sm sm:text-base">
-                    We are the UK's largest provider, with more patrols in more places
+                    We are the UK's largest provider, with more patrols in more
+                    places
                   </span>
                 </div>
                 <div className="flex items-center justify-center lg:justify-start">
@@ -146,7 +86,7 @@ export default function page() {
           </div>
         </div>
       </div>
-      
+
       {/* Statistics Section - Responsive */}
       <div className="py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -155,7 +95,9 @@ export default function page() {
               <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-medium text-gray-900 mb-2">
                 836M
               </div>
-              <div className="text-gray-600 text-xs sm:text-sm lg:text-base">Total Race</div>
+              <div className="text-gray-600 text-xs sm:text-sm lg:text-base">
+                Total Race
+              </div>
             </div>
             <div className="text-center">
               <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-medium text-gray-900 mb-2">
@@ -177,12 +119,14 @@ export default function page() {
               <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-medium text-gray-900 mb-2">
                 238M
               </div>
-              <div className="text-gray-600 text-xs sm:text-sm lg:text-base">Today Race</div>
+              <div className="text-gray-600 text-xs sm:text-sm lg:text-base">
+                Today Race
+              </div>
             </div>
           </div>
         </div>
       </div>
-      
+
       {/* Call to Action Section - Responsive */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center text-center text-gray-900 font-bold z-10 px-4">
@@ -195,14 +139,14 @@ export default function page() {
           </div>
         </div>
         <Image
-          src={"/pigeon_flying.png"}
+          src={"/pigeon_flying.webp"}
           alt="pigeon flying background"
           width={500}
           height={500}
           className="w-full object-cover h-32 sm:h-40 md:h-60 lg:h-80 xl:h-96 opacity-40"
         />
       </div>
-      
+
       {/* Bottom CTA Cards - Responsive */}
       <div className="py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -234,4 +178,29 @@ export default function page() {
       </div>
     </div>
   );
+}
+
+function ListEventsComponent() {
+  const { data, error, isError, isPending, isSuccess } = useListEvents({});
+  if (isPending)
+    return (
+      <div className="h-40 flex items-center justify-center">Loading...</div>
+    );
+  if (isError)
+    return (
+      <div className="h-40 flex items-center justify-center">
+        Error: {error.message}
+      </div>
+    );
+  if (isSuccess && data) {
+    console.log(data);
+    const events: ListEvents[] = data?.data?.events;
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {events.map((event) => (
+          <EventComponent event={event} key={event.id} />
+        ))}
+      </div>
+    );
+  }
 }

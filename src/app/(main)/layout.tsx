@@ -1,41 +1,11 @@
-"use client";
-import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { useSession } from "@/lib/auth-client";
-import useUserStore from "@/store/store";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { AuthProvider } from "../auth-provider";
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const { data, error, isPending } = useSession();
-  const router = useRouter();
-  const { setUserData, userData } = useUserStore.getState();
-  useEffect(() => {
-    if (data && !isPending) {
-      setUserData(data.session, data.user);
-    }
-  }, [data,isPending, setUserData]);
-  if (isPending) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-  if (data && !userData.user) {
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-blue-600"></div>
-    </div>;
-  }
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <AuthProvider requireAuth={false}>
       <Header />
       {children}
-      <Footer />
-    </>
+    </AuthProvider>
   );
 }

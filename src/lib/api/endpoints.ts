@@ -1,48 +1,40 @@
-const raceEndpoints = {
-  base: "/race",
-  myraces: "/user/races",
-  getRaceById: (id: string) => `/race/${id}`,
-  registerRace: (raceId: string) => `/race/register/${raceId}`,
-  capturePayment: `/race/capture`,
-};
-
-const fireBirdEndpoints = {
-  base: "/firebird/race-item",
-  breeders: "/firebird/breeders",
-  raceResult:"/firebird/race-result",
-  eventInventory: "/firebird/event-inventory",
-  events: "/firebird/events",
-};
-
-const loftEndpoints = {
-  base: "/user/lofts",
-  create: "/user/lofts/create",
-  getLoft: (id: string) => `/user/lofts/${id}`,
-  updateLoft: (id: string) => `/user/lofts/${id}`,
-  createBird: (loftId: string) => `/user/lofts/${loftId}/birds/create`,
-  getBird: (birdId: string) => `/user/birds/${birdId}`,
-  updateBird: (birdId: string) => `/user/birds/${birdId}`,
-  getSharedLofts: `/user/shared-lofts`,
-  getLoftInvitations: `/user/lofts/invitations`,
-  acceptLoftInvitation: (invitationId: string) =>
-    `/user/lofts/invitations/accept/${invitationId}`,
-  rejectLoftInvitation: (invitationId: string) =>
-    `/user/lofts/invitations/reject/${invitationId}`,
-  inviteToLoft: (loftId: string) => `/user/lofts/invite/${loftId}`,
-  getBirdByLoftId: (loftId: string) => `/user/lofts/${loftId}/birds`,
-};
-
-const paymentsEndpoints = {
-  base: "/user/payments",
+const authEndpoints = {
+  login: "/auth/breeder/login",
+  logout: "/auth/breeder/logout",
+  signup: "/auth/breeder/signup",
+  session: "/auth/session",
 };
 
 const userEndpoints = {
-  base: "/user",
+  currentUser: "/users/profile",
+};
+
+const birdsEndpoints = {
+  all: "/birds",
+  create: "/birds",
+  update: (id: string) => `/birds/${id}`,
+};
+
+const eventsEndpoints = {
+  all: "/events",
+  byId: (id: string) => `/events/${id}`,
+  more: (id: string) => `/events/${id}/more`,
+};
+
+const eventInventoryEndpoints = {
+  create: "/event-inventory",
+  getmyevents: "/event-inventory/my-events",
+};
+
+const paymentEndpoints = {
+  capture: "/payments/capture",
+  my: "/payments/my",
 };
 export const apiEndpoints = {
-  raceEndpoints,
-  loftEndpoints,
-  paymentsEndpoints,
-  fireBirdEndpoints,
-  userEndpoints,
+  auth: authEndpoints,
+  user: userEndpoints,
+  birds: birdsEndpoints,
+  events: eventsEndpoints,
+  eventInventory: eventInventoryEndpoints,
+  payment: paymentEndpoints,
 };

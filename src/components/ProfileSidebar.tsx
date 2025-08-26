@@ -1,6 +1,6 @@
 "use client";
-import { signOut } from "@/lib/auth-client";
-import useUserStore from "@/store/store";
+import { useLogout } from "@/lib/api/auth";
+import { useAuthStore } from "@/store/store";
 import { ChevronRight, LogOut, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -8,7 +8,29 @@ import { toast } from "sonner";
 export default function ProfileSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { setUserData } = useUserStore();
+  const { clearAuth } = useAuthStore();
+  const { mutateAsync: logout } = useLogout();
+  const handleLogout = async () => {
+    if (!logout) return;
+    try {
+      // Clear token from localStorage and auth state
+      clearAuth();
+      
+      const { data, error } = await logout({});
+      if (error) {
+        toast.error("Failed to log out");
+        return;
+      }
+      toast.success("Logged out successfully");
+      router.push("/login");
+    } catch (error) {
+      toast.error("An error occurred while logging out");
+      // Even if the API call fails, clear local auth state and redirect
+      clearAuth();
+      router.push("/login");
+    }
+  };
+
   const sidebarItems = [
     {
       name: "My Profile",
@@ -17,20 +39,14 @@ export default function ProfileSidebar() {
       rightIcon: ChevronRight,
     },
     {
-      name: "Own Lofts",
-      href: "/profile/lofts",
+      name: "Birds",
+      href: "/profile/birds",
       leftIcon: User,
       rightIcon: ChevronRight,
     },
     {
-      name: "Shared Lofts",
-      href: "/profile/shared-lofts",
-      leftIcon: User,
-      rightIcon: ChevronRight,
-    },
-    {
-      name: "Races",
-      href: "/profile/my-races",
+      name: "Events",
+      href: "/profile/my-events",
       leftIcon: User,
       rightIcon: ChevronRight,
     },
@@ -41,18 +57,6 @@ export default function ProfileSidebar() {
       rightIcon: ChevronRight,
     },
   ];
-  const handleLogout = async () => {
-    const { data, error } = await signOut();
-    if (error) {
-      console.error("Logout failed:", error);
-      return;
-    }
-    if (data) {
-      setUserData(null, null);
-      toast.success("Logout successful");
-      router.push("/");
-    }
-  };
   return (
     <div className="w-full lg:w-64 lg:min-w-64">
       <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible">
@@ -78,7 +82,7 @@ export default function ProfileSidebar() {
         onClick={handleLogout}
         className="mt-4 flex items-center space-x-2 lg:space-x-4 p-3 lg:p-4 cursor-pointer"
       >
-        <LogOut className="w-4 h-4 lg:w-5 lg:h-5" /> 
+        <LogOut className="w-4 h-4 lg:w-5 lg:h-5" />
         <span className="text-sm lg:text-base">Logout</span>
       </div>
     </div>

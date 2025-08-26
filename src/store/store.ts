@@ -1,24 +1,48 @@
-import type { Session, User } from "better-auth";
+import { User } from "@/lib/types";
 import { create } from "zustand";
-type UserStore = {
-  userData: {
-    session: Session | null;
-    user: User | null;
-  };
-  error: Error | null;
-  setUserData: (session: Session | null, user: User | null) => void;
-  setError: (error: Error | null) => void;
-};
 
-const useUserStore = create<UserStore>((set) => ({
-  userData: {
-    session: null,
-    user: null,
+interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+
+  setUser: (user: User) => void;
+  clearAuth: () => void;
+  setLoading: (loading: boolean) => void;
+  checkAuthFromStorage: () => boolean;
+}
+
+export const useAuthStore = create<AuthState>()((set, get) => ({
+  user: null,
+  isAuthenticated: false,
+  isLoading: true,
+
+  setUser: (user: User) =>
+    set({
+      user,
+      isAuthenticated: !!user,
+      isLoading: false,
+    }),
+
+  clearAuth: () => {
+    // Clear token from localStorage
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("accessToken");
+    }
+    set({
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+    });
   },
-  error: null,
-  setUserData: (session, user) => set({ userData: { session, user } }),
-  setError: (error) => set({ error }),
-}));
 
-export default useUserStore;
-export type { UserStore };
+  setLoading: (loading: boolean) => set({ isLoading: loading }),
+
+  checkAuthFromStorage: () => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("accessToken");
+      return !!token;
+    }
+    return false;
+  },
+}));

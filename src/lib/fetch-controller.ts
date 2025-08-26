@@ -1,14 +1,13 @@
 "use client";
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import { useAuthStore } from "@/store/store"; // Adjust path as needed
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export type RequestMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-export type RequestMode = "cors" | "no-cors" | "same-origin" | "navigate";
 
 interface RequestConfig {
-  mode?: RequestMode;
   bodyType?: "json" | "formdata";
   endpoint?: string;
   exact?: boolean;
@@ -16,7 +15,6 @@ interface RequestConfig {
   method?: RequestMethod;
   params?: Record<string, string>;
   headers?: Record<string, string>;
-  options?: Record<string, any>;
   enabled?: boolean;
   onSuccess?: () => void;
   onError?: (error: {
@@ -30,16 +28,64 @@ interface RequestConfig {
   invalidateKeys?: { queryKey: string[]; exact?: boolean }[];
 }
 
+// Create axios instance
+const apiClient = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Request interceptor to add Authorization header
+apiClient.interceptors.request.use(
+  (config) => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor to handle 401 errors
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      const currentPath =
+        typeof window !== "undefined" ? window.location.pathname : "";
+
+      // Skip redirect if already on login or signup page
+      if (!currentPath.includes("/login") && !currentPath.includes("/signup")) {
+        const { clearAuth } = useAuthStore.getState();
+        clearAuth();
+        
+        // Clear token from localStorage
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("accessToken");
+        }
+
+        window.location.href = `/login`;
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default function useApiRequest<T = any>({
   bodyType = "json",
   endpoint,
   exact = true,
-  mode = "cors",
   queryKey = [],
   method = "GET",
   params,
   headers,
-  options,
   enabled = true,
   onSuccess,
   onError,
@@ -48,67 +94,59 @@ export default function useApiRequest<T = any>({
   invalidateKeys,
 }: RequestConfig) {
   const queryClient = useQueryClient();
-  const BASE_URL = baseUrl ?? API_URL;
 
-  const fetchData = async (
+  const makeRequest = async (
     body: any = null
   ): Promise<{
     data?: T;
     error?: string;
     status: number;
   }> => {
-    const search = queryString ?? new URLSearchParams(params).toString();
-    const url = `${BASE_URL}${endpoint ?? ""}${search ? `?${search}` : ""}`;
-
-    const config: RequestInit = {
-      mode,
-      method,
-      headers: headers ?? {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      ...options,
-    };
-
-    if (body && method !== "GET" && bodyType === "json") {
-      config.body = JSON.stringify(body);
-    }
-
-    if (bodyType === "formdata") {
-      config.body = body;
-    }
-
     try {
-      const response = await fetch(url, config);
-      const statusCode = response.status;
+      const config: AxiosRequestConfig = {
+        method,
+        url: endpoint ?? "",
+        baseURL: baseUrl ?? API_URL,
+        headers: headers ? { ...headers } : undefined,
+        params: params,
+      };
 
-      if (statusCode === 204) {
-        return { data: null as any, status: statusCode };
+      // Add query string if provided
+      if (queryString) {
+        config.url = `${config.url}?${queryString}`;
       }
 
-      const isJson = response.headers
-        .get("content-type")
-        ?.includes("application/json");
-
-      const data = isJson ? await response.json() : null;
-
-      if (!response.ok) {
-        throw new Error(`${JSON.stringify(data?.error || data)}`, {
-          cause: statusCode,
-        });
+      // Handle body based on type and method
+      if (body && method !== "GET") {
+        if (bodyType === "formdata") {
+          config.data = body;
+          config.headers = {
+            ...config.headers,
+            "Content-Type": "multipart/form-data",
+          };
+        } else {
+          config.data = body;
+        }
       }
 
-      return { data, status: statusCode };
-    } catch (err) {
-      console.log(err);
-      if (err instanceof Error) {
-        console.log("Error in fetchData:", err.message);
-        return {
-          error: err?.message ?? JSON.stringify(err),
-          status: Number(err?.cause) || 500,
-        };
-      }
-      return { error: "Internal error", status: 500 };
+      const response = await apiClient.request(config);
+
+      return {
+        data: response.data,
+        status: response.status,
+      };
+    } catch (err: any) {
+      const status = err.response?.status || 500;
+      const errorMessage =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        err.message ||
+        "Internal error";
+
+      return {
+        error: errorMessage,
+        status,
+      };
     }
   };
 
@@ -116,13 +154,19 @@ export default function useApiRequest<T = any>({
   if (enabled && method === "GET") {
     const query = useQuery({
       queryKey,
-      queryFn: () => fetchData(),
+      queryFn: () => makeRequest(),
       refetchOnWindowFocus: false,
-      retry: false,
+      retry: (failureCount, error: any) => {
+        // Don't retry on 401 or 403 errors
+        if (error?.status === 401 || error?.status === 403) {
+          return false;
+        }
+        return failureCount < 3;
+      },
       refetchOnReconnect: false,
       staleTime: Infinity,
     });
-    console.log(query.isError);
+
     return {
       data: query.data?.data as T,
       error: query.error,
@@ -144,13 +188,21 @@ export default function useApiRequest<T = any>({
     reset,
   } = useMutation({
     mutationFn: async (data?: Record<string, any> | FormData) => {
-      const response = await fetchData(data);
+      const response = await makeRequest(data);
+
+      // Throw error if request failed so onError gets called
+      if (response.error) {
+        throw new Error(response.error, { cause: response.status });
+      }
+
       return response;
     },
-    onSuccess: async ({ status }) => {
-      if ([200, 201].includes(status)) {
+    onSuccess: async (response) => {
+      if ([200, 201, 204].includes(response.status)) {
         // Invalidate base key
-        if (queryKey.length) queryClient.invalidateQueries({ queryKey, exact });
+        if (queryKey.length) {
+          queryClient.invalidateQueries({ queryKey, exact });
+        }
 
         // Invalidate extra keys
         if (invalidateKeys?.length) {
@@ -158,12 +210,19 @@ export default function useApiRequest<T = any>({
             queryClient.invalidateQueries(k);
           }
         }
+
         onSuccess?.();
       }
     },
-    onError: ({ message, name, cause, stack }) => {
-      console.log({ message, name, cause, stack });
-      onError?.({ message, name, cause, stack });
+    onError: (err: any) => {
+      const errorObj = {
+        message: err.message || "An error occurred",
+        name: err.name || "Error",
+        cause: err.cause,
+        stack: err.stack,
+      };
+
+      onError?.(errorObj);
     },
   });
 

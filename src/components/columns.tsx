@@ -1,606 +1,173 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { CircleArrowRight, Eye } from "lucide-react";
-import Link from "next/link";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { Pencil, CreditCard } from "lucide-react";
+import { Bird, MyEvents, MyPayments } from "@/lib/types";
+import { BirdUpdateForm } from "./BirdCreateForm";
+import { Button } from "./ui/button";
 
-export type MyLofts = {
-  id: string;
-  name: string;
-  loftId: string;
-  location: string;
-};
-
-export type SharedLofts = {
-  user: {
-    name: string | null;
-  };
-  id: string;
-  loftId: string;
-  name: string;
-  location: string;
-  userId: string;
-  createdAt: Date;
-};
-
-export const SharedLoftsColumns: ColumnDef<SharedLofts>[] = [
+export const BirdColumns: ColumnDef<Bird>[] = [
   {
-    accessorKey: "Sl No.",
-    header: "Sl No.",
-    cell: ({ row }) => row.index + 1,
+    header: "Sl. No.",
+    accessorKey: "id",
+    cell: ({ row }) => <div>{row.index + 1}</div>,
   },
   {
-    accessorKey: "name",
-    header: "Loft Name",
-  },
-  {
-    accessorKey: "loftId",
-    header: "Loft ID",
-  },
-  {
-    accessorKey: "location",
-    header: "Location",
-  },
-  {
-    accessorKey: "user.name",
-    header: "Shared By",
-    cell: ({ row }) => {
-      const userName = row.original.user.name;
-      return (
-        <span className="text-muted-foreground">{userName || "Unknown"}</span>
-      );
-    },
-  },
-];
-
-export type Bird = {
-  id: string;
-  name: string;
-  status: "ACTIVE" | "MISSING" | "HOSPITALIZED";
-  bandNumber: string;
-  breed: string | null;
-  color: string | null;
-};
-
-export type Loft = {
-  birds: Bird[];
-  _count: {
-    birds: number;
-  };
-  id: string;
-  loftId: string;
-  name: string;
-  location: string;
-  userId: string;
-  createdAt: Date;
-};
-
-export const MyLoftsColumns: ColumnDef<MyLofts>[] = [
-  {
-    accessorKey: "Sl No.",
-    header: "Sl No.",
-    cell: ({ row }) => row.index + 1,
-  },
-  {
-    accessorKey: "name",
-    header: "Loft Name",
-  },
-  {
-    accessorKey: "loftId",
-    header: "Loft ID",
-  },
-  {
-    accessorKey: "location",
-    header: "Location",
-  },
-  {
-    accessorKey: "action",
-    header: () => <div className="text-right">Action</div>,
-    cell: ({ row }) => {
-      const loft = row.original;
-      return (
-        <div className="flex items-center justify-end gap-2">
-          <Link href={`/profile/lofts/${loft.id}`}>
-            <Eye size={20} />
-          </Link>
-          <Link href={`/profile/lofts/update/${loft.id}`}>
-            <CircleArrowRight size={20} />
-          </Link>
-        </div>
-      );
-    },
-  },
-];
-
-export const BirdsColumns: ColumnDef<Bird>[] = [
-  {
-    accessorKey: "Sl No.",
-    header: "Sl No.",
-    cell: ({ row }) => row.index + 1,
-  },
-  {
-    accessorKey: "name",
+    accessorKey: "birdName",
     header: "Bird Name",
-  },
-  {
-    accessorKey: "bandNumber",
-    header: "Band Number",
-  },
-  {
-    accessorKey: "breed",
-    header: "Breed",
   },
   {
     accessorKey: "color",
     header: "Color",
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const bird = row.original;
-      return (
-        <span
-          className={`px-2 py-1 rounded-full text-xs ${
-            bird.status === "ACTIVE"
-              ? "bg-green-100 text-green-800"
-              : bird.status === "MISSING"
-              ? "bg-yellow-100 text-yellow-800"
-              : "bg-red-100 text-red-800"
-          }`}
-        >
-          {bird.status}
-        </span>
-      );
-    },
+    accessorKey: "sex",
+    header: "Sex",
   },
   {
-    accessorKey: "action",
-    header: () => <div className="text-right">Action</div>,
+    accessorKey: "actions",
+    header: () => <div className="text-right">Actions</div>,
+    cell: ({ row }) => (
+      <div className="flex justify-end">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Pencil size={20} className="cursor-pointer text-primary" />
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle>Edit Bird</DialogTitle>
+            <BirdUpdateForm values={row.original} />
+          </DialogContent>
+        </Dialog>
+      </div>
+    ),
+  },
+];
+
+export const MyEventsColumns: ColumnDef<MyEvents>[] = [
+  {
+    header: "Sl. No.",
+    accessorKey: "id",
+    cell: ({ row }) => <div>{row.index + 1}</div>,
+  },
+  {
+    accessorKey: "event.name",
+    header: "Event Name",
+  },
+  {
+    accessorKey: "event.date",
+    header: "Event Date",
+    cell: ({ row }) => (
+      <div>{new Date(row.original.event.date).toLocaleDateString()}</div>
+    ),
+  },
+  {
+    accessorKey: "reserved_birds",
+    header: "Reserved Birds",
+  },
+  {
+    accessorKey: "loft",
+    header: "Loft",
+  },
+  {
+    accessorKey: "registration_date",
+    header: "Registration Date",
+    cell: ({ row }) => (
+      <div>{new Date(row.original.registration_date).toLocaleDateString()}</div>
+    ),
+  },
+];
+
+export const MyPaymentsColumns: ColumnDef<MyPayments>[] = [
+  {
+    header: "Sl. No.",
+    accessorKey: "id",
+    cell: ({ row }) => <div>{row.index + 1}</div>,
+  },
+  {
+    accessorKey: "eventInventory.event.name",
+    header: "Event Name",
+    cell: ({ row }) => <div>{row.original.eventInventory.event.name}</div>,
+  },
+  {
+    accessorKey: "eventInventory.event.date",
+    header: "Event Date",
+    cell: ({ row }) => (
+      <div>
+        {new Date(row.original.eventInventory.event.date).toLocaleDateString()}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "paymentDate",
+    header: "Payment Date",
+    cell: ({ row }) => (
+      <div>
+        {row.original.paymentDate
+          ? new Date(row.original.paymentDate).toLocaleDateString()
+          : "-"}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "paymentValue",
+    header: "Payment Value",
+    cell: ({ row }) => <div>${row.original.paymentValue.toFixed(2)}</div>,
+  },
+  {
+    accessorKey: "type",
+    header: "Payment Type",
+    cell: ({ row }) => <div>{row.original.type.replace(/_/g, " ")}</div>,
+  },
+  {
+    accessorKey: "status",
+    header: "Payment Status",
     cell: ({ row }) => {
-      const bird = row.original;
+      const status = row.original.status.toLowerCase();
+      const isDue = status === "due" || status === "pending";
+
+      const getStatusColor = (status: string) => {
+        switch (status) {
+          case "paid":
+          case "completed":
+            return "bg-green-100 text-green-800 border-green-200";
+          case "due":
+          case "pending":
+            return "bg-yellow-100 text-yellow-800 border-yellow-200";
+          case "overdue":
+            return "bg-red-100 text-red-800 border-red-200";
+          case "cancelled":
+          case "failed":
+            return "bg-gray-100 text-gray-800 border-gray-200";
+          default:
+            return "bg-blue-100 text-blue-800 border-blue-200";
+        }
+      };
+
       return (
-        <div className="flex items-center justify-end gap-2">
-          <Link href={`/profile/birds/${bird.id}`}>
-            <Eye size={20} />
-          </Link>
+        <div className="flex items-center gap-2">
+          <span
+            className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+              status
+            )}`}
+          >
+            {row.original.status.charAt(0).toUpperCase() +
+              row.original.status.slice(1)}
+          </span>
+          {isDue && (
+            <Button
+              size="sm"
+              variant="default"
+              className="h-7 px-3 text-xs"
+              onClick={() => {
+                // Handle payment logic here
+                console.log("Pay now clicked for payment:", row.original.id);
+              }}
+            >
+              <CreditCard className="w-3 h-3 mr-1" />
+              Pay Now
+            </Button>
+          )}
         </div>
       );
     },
   },
 ];
-
-export type MyRaces = {
-  id: string;
-  userId: string;
-  createdAt: Date;
-  status: "PENDING" | "PAID" | "CANCELLED";
-  raceId: string;
-  birdId: string;
-  paymentId: string | null;
-  birdStatus: "UNKNOWN" | "ARRIVED" | "DISQUALIFIED" | "RETIRED" | "MISSING";
-  arrivalTime: Date | null;
-  position: number | null;
-  speed: number | null;
-  race: {
-    status: "UPCOMING" | "LIVE" | "COMPLETED";
-    id: string;
-    name: string;
-  };
-  bird: {
-    select: {
-      id: true;
-      name: true;
-      breed: true;
-      rfIdTag: true;
-    };
-  };
-};
-
-export const MyRacesColumns: ColumnDef<MyRaces>[] = [
-  {
-    accessorKey: "Sl No.",
-    header: "Sl No.",
-    cell: ({ row }) => row.index + 1,
-  },
-  {
-    accessorKey: "race.name",
-    header: "Race Name",
-  },
-  {
-    accessorKey: "bird.name",
-    header: "Bird Name",
-  },
-  {
-    accessorKey: "bird.rfIdTag",
-    header: "RFID Tag",
-  },
-  {
-    accessorKey: "race.status",
-    header: "Race Status",
-    cell: ({ row }) => {
-      const raceStatus = row.original.race.status;
-      return (
-        <span
-          className={`px-2 py-1 rounded-full text-xs ${
-            raceStatus === "UPCOMING"
-              ? "bg-blue-100 text-blue-800"
-              : raceStatus === "LIVE"
-              ? "bg-green-100 text-green-800"
-              : "bg-gray-100 text-gray-800"
-          }`}
-        >
-          {raceStatus}
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: "position",
-    header: "Position",
-    cell: ({ row }) => {
-      const position = row.original.position;
-      return (
-        <span className="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800">
-          {position !== null ? position : "N/A"}
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: "speed",
-    header: "Speed (m/s)",
-    cell: ({ row }) => {
-      const speed = row.original.speed;
-      return (
-        <span className="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800">
-          {speed !== null ? speed.toFixed(2) : "N/A"}
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: "birdStatus",
-    header: "Bird Status",
-    cell: ({ row }) => {
-      const birdStatus = row.original.birdStatus;
-      return (
-        <span
-          className={`px-2 py-1 rounded-full text-xs ${
-            birdStatus === "ARRIVED"
-              ? "bg-green-100 text-green-800"
-              : birdStatus === "DISQUALIFIED"
-              ? "bg-red-100 text-red-800"
-              : birdStatus === "RETIRED"
-              ? "bg-yellow-100 text-yellow-800"
-              : "bg-gray-100 text-gray-800"
-          }`}
-        >
-          {birdStatus}
-        </span>
-      );
-    },
-  },
-];
-
-type RaceEntry = {
-  race: {
-    id: string;
-    name: string;
-  };
-  bird: {
-    id: string;
-    name: string;
-    bandNumber: string;
-  };
-};
-
-export type MyPayments = {
-  raceEntries: RaceEntry[];
-  id: string;
-  paypalTransactionId: string;
-  payerEmail: string;
-  amount: number;
-  currency: string;
-  status: "PENDING" | "SUCCESS" | "FAILES";
-  paymentTime: Date;
-  userId: string;
-  createdAt: Date;
-};
-
-export const MyPaymentsColumns: ColumnDef<MyPayments>[] = [
-  {
-    accessorKey: "Sl No.",
-    header: "Sl No.",
-    cell: ({ row }) => row.index + 1,
-  },
-  {
-    accessorKey: "paypalTransactionId",
-    header: "Transaction ID",
-  },
-  {
-    accessorKey: "payerEmail",
-    header: "Payer Email",
-  },
-  {
-    accessorKey: "amount",
-    header: "Amount",
-    cell: ({ row }) => `$${row.original.amount.toFixed(2)}`,
-  },
-  {
-    accessorKey: "currency",
-    header: "Currency",
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.original.status;
-      return (
-        <span
-          className={`px-2 py-1 rounded-full text-xs ${
-            status === "PENDING"
-              ? "bg-yellow-100 text-yellow-800"
-              : status === "SUCCESS"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
-          }`}
-        >
-          {status}
-        </span>
-      );
-    },
-  },
-];
-
-export type FireBird = {
-  ID_RACE_ITEM: number | null;
-  BIRD_POSITION: number | null;
-  ARRIVAL_TIME: string | null;
-  BIRD_DROP: number | null;
-  PRIZE_VALUE: number | null;
-};
-
-export const FireBirdsColumns: ColumnDef<FireBird>[] = [
-  {
-    accessorKey: "ID_RACE_ITEM",
-    header: "ID_RACE_ITEM",
-  },
-  {
-    accessorKey: "BIRD_POSITION",
-    header: "BIRD_POSITION",
-  },
-  {
-    accessorKey: "ARRIVAL_TIME",
-    header: "ARRIVAL_TIME",
-  },
-  {
-    accessorKey: "BIRD_DROP",
-    header: "BIRD_DROP",
-  },
-  {
-    accessorKey: "PRIZE_VALUE",
-    header: "PRIZE_VALUE",
-  },
-];
-
-export type FireBirdRaceResult = {
-  RACE_NUMBER: number;
-  LOCATION: string;
-  DISTANCE: number;
-  START_TIME: string;
-  SUNRISE: string;
-  SUNSET: string;
-};
-
-export const FireBirdRaceResultsColumns: ColumnDef<FireBirdRaceResult>[] = [
-  {
-    accessorKey: "RACE_NUMBER",
-    header: "Race Number",
-  },
-  {
-    accessorKey: "LOCATION",
-    header: "Location",
-  },
-  {
-    accessorKey: "DISTANCE",
-    header: "Distance (km)",
-  },
-  {
-    accessorKey: "START_TIME",
-    header: "Start Time",
-    accessorFn: (row) => {
-      const date = new Date(row.START_TIME);
-      return date.toLocaleString("en-US", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h24",
-      });
-    },
-  },
-  {
-    accessorKey: "SUNRISE",
-    header: "Sunrise",
-    accessorFn: (row) => {
-      const date = new Date(row.SUNRISE);
-      return date.toLocaleString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h24",
-      });
-    },
-  },
-  {
-    accessorKey: "SUNSET",
-    header: "Sunset",
-    accessorFn: (row) => {
-      const date = new Date(row.SUNSET);
-      return date.toLocaleString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h24",
-      });
-    },
-  },
-];
-
-export type FireBirdBreeder = {
-  ID_BREEDER: number;
-  STATUS: number;
-  FIRST_NAME: string;
-  LAST_NAME: string;
-  COUNTRY: string | null;
-  SOCIAL_SECURITY_NUMBER: string;
-  TAX_NUMBER: string;
-  ADDRESS_1: string;
-  CITY_1: string;
-  ZIP_1: string;
-  STATE_1: string;
-  PHONE: string;
-  CELL: string;
-  FAX: string;
-  SMS: string;
-  EMAIL: string;
-  EMAIL_2: string;
-  WEB_ADDRESS: string;
-};
-
-export const FireBirdBreedersColumns: ColumnDef<FireBirdBreeder>[] = [
-  {
-    accessorKey: "ID_BREEDER",
-    header: "ID_BREEDER",
-  },
-  {
-    accessorKey: "STATUS",
-    header: "STATUS",
-  },
-  {
-    header: "Name",
-    accessorFn: (row) => `${row.FIRST_NAME} ${row.LAST_NAME}`,
-    id: "name",
-  },
-  {
-    accessorKey: "COUNTRY",
-    header: "Country",
-  },
-  {
-    accessorKey: "SOCIAL_SECURITY_NUMBER",
-    header: "Social Security Number",
-  },
-  {
-    accessorKey: "TAX_NUMBER",
-    header: "Tax Number",
-  },
-  {
-    accessorKey: "ADDRESS_1",
-    header: "Address Line 1",
-  },
-  {
-    accessorKey: "CITY_1",
-    header: "City",
-  },
-  {
-    accessorKey: "ZIP_1",
-    header: "ZIP Code",
-  },
-  {
-    accessorKey: "STATE_1",
-    header: "State/Province",
-  },
-  {
-    accessorKey: "PHONE",
-    header: "Phone Number",
-  },
-  {
-    accessorKey: "CELL",
-    header: "Cell Number",
-  },
-  {
-    accessorKey: "FAX",
-    header: "Fax Number",
-  },
-  {
-    accessorKey: "SMS",
-    header: "SMS Enabled?",
-  },
-  {
-    accessorKey: "EMAIL",
-    header: "Email Address",
-  },
-  {
-    accessorKey: "EMAIL_2",
-    header: "Secondary Email Address",
-  },
-  {
-    accessorKey: "WEB_ADDRESS",
-    header: "Web Address",
-  },
-];
-
-export type FireBirdEventInventory = {
-  LOFT: string;
-  BIRD_NO: number;
-  BREEDER: number;
-  SIGN_IN_DATE: string;
-  WAITING: number;
-  WAITING_DATE: string | null;
-  RESERVED_BIRDS: number;
-  PERCH_FEE_VALUE: number;
-  BIRDS_IN_LOFT: number;
-};
-
-export const FireBirdEventInventoryColumns: ColumnDef<FireBirdEventInventory>[] =
-  [
-    {
-      accessorKey: "LOFT",
-      header: "Loft",
-    },
-    {
-      accessorKey: "BIRD_NO",
-      header: "Bird No.",
-    },
-    {
-      accessorKey: "BREEDER",
-      header: "Breeder",
-    },
-    {
-      accessorKey: "SIGN_IN_DATE",
-      header: "Sign In Date",
-    },
-    {
-      accessorKey: "WAITING",
-      header: "Waiting",
-    },
-    {
-      accessorKey: "WAITING_DATE",
-      header: "Waiting Date",
-      cell: ({ row }) => {
-        const waitingDate = row.original.WAITING_DATE;
-        if (waitingDate === null) return "-";
-        const date = new Date(waitingDate);
-        return date.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        });
-      },
-    },
-    {
-      accessorKey: "RESERVED_BIRDS",
-      header: "Reserved Birds",
-    },
-    {
-      accessorKey: "PERCH_FEE_VALUE",
-      header: "Perch Fee Value",
-      cell: ({ row }) => {
-        const value = row.original.PERCH_FEE_VALUE;
-        if (value === null) return "-";
-        return `$${value.toFixed(2)}`;
-      },
-    },
-    {
-      accessorKey: "BIRDS_IN_LOFT",
-      header: "Birds in Loft",
-    },
-  ];
