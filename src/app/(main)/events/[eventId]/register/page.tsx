@@ -33,7 +33,7 @@ function RegisterForm({ eventId }: { eventId: string }) {
   if (isPending) return <div>Loading...</div>;
   if (isError) return <div>Error: {error.message}</div>;
   const event: Event = data?.data;
-  if (event.status !== "OPEN") {
+  if (!event.isOpen) {
     return (
       <div className="h-40 flex items-center justify-center">
         Event is not open for registration
@@ -60,6 +60,7 @@ function RegisterForm({ eventId }: { eventId: string }) {
         <BirdInformation
           selectedBirds={selectedBirds}
           setSelectedBirds={setSelectedBirds}
+          event={event}
         />
         {selectedBirds.length > 0 && (
           <PaymentInformation event={event} selectedBirds={selectedBirds} />
@@ -76,7 +77,21 @@ function PaymentInformation({
   event: Event;
   selectedBirds: Bird[];
 }) {
-  const totalAmount = event.feeSchema.entryFee * selectedBirds.length;
+  // Calculate total based on individual perch fees for each bird position
+  const calculateTotalAmount = () => {
+    let total = 0;
+    selectedBirds.forEach((_, index) => {
+      const perchFeeItem = event.feeSchema.perchFeeItems.find(
+        (item) => item.birdNo === index + 1
+      );
+      if (perchFeeItem) {
+        total += perchFeeItem.perchFee;
+      }
+    });
+    return total;
+  };
+
+  const totalAmount = calculateTotalAmount();
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 xl:p-10 w-full border-t bg-gray-50">
@@ -88,18 +103,10 @@ function PaymentInformation({
         <div className="space-y-4 mb-6">
           <div className="flex justify-between items-center py-2 border-b">
             <span className="text-gray-600 text-sm sm:text-base">
-              Perch Fee per Bird:
-            </span>
-            <span className="font-medium text-sm sm:text-base">
-              ${event.feeSchema.perchFee.toFixed(2)}
-            </span>
-          </div>
-          <div className="flex justify-between items-center py-2 border-b">
-            <span className="text-gray-600 text-sm sm:text-base">
               Number of Birds:
             </span>
             <span className="font-medium text-sm sm:text-base">
-              {selectedBirds.length}
+              {selectedBirds.length} / {event.feeSchema.maxBirdCount}
             </span>
           </div>
           <div className="flex justify-between items-center py-3 border-b-2 border-secondary">
@@ -117,19 +124,26 @@ function PaymentInformation({
             Registered Birds:
           </h4>
           <div className="max-h-48 overflow-y-auto space-y-2">
-            {selectedBirds.map((bird, index) => (
-              <div
-                key={bird.id}
-                className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded text-sm"
-              >
-                <span className="flex-1 truncate">
-                  {index + 1}. {bird.birdName} - ({bird.color})
-                </span>
-                <span className="font-medium text-green-600 ml-2">
-                  ${event.feeSchema.perchFee.toFixed(2)}
-                </span>
-              </div>
-            ))}
+            {selectedBirds.map((bird, index) => {
+              const perchFeeItem = event.feeSchema.perchFeeItems.find(
+                (item) => item.birdNo === index + 1
+              );
+              const perchFee = perchFeeItem?.perchFee || 0;
+              
+              return (
+                <div
+                  key={bird.id}
+                  className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded text-sm"
+                >
+                  <span className="flex-1 truncate">
+                    Bird #{index + 1}: {bird.birdName} - ({bird.color})
+                  </span>
+                  <span className="font-medium text-green-600 ml-2">
+                    ${perchFee.toFixed(2)}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -152,14 +166,23 @@ function PaymentInformation({
 function BirdInformation({
   selectedBirds,
   setSelectedBirds,
+  event,
 }: {
   selectedBirds: Bird[];
   setSelectedBirds: (birds: Bird[]) => void;
+  event: Event;
 }) {
-  const { data } = useListBirds();
-  const birds: Bird[] = data?.data || [];
+  const { data: birdsData } = useListBirds();
+  const birds: Bird[] = birdsData?.data || [];
+  
+  const maxBirdCount = event?.feeSchema?.maxBirdCount || 0;
 
   const handleAddBird = (bird: Bird) => {
+    if (selectedBirds.length >= maxBirdCount) {
+      toast.error(`Maximum ${maxBirdCount} birds allowed for this event`);
+      return;
+    }
+    
     if (!selectedBirds.find((b) => b.id === bird.id)) {
       setSelectedBirds([...selectedBirds, bird]);
       toast.success(`${bird.birdName} added to registration`);
@@ -187,6 +210,21 @@ function BirdInformation({
         Bird Information
       </h2>
 
+      {/* Bird Count Limit Info */}
+      {maxBirdCount > 0 && (
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-800">
+            <span className="font-semibold">Note:</span> You can register a maximum of{" "}
+            <span className="font-bold">{maxBirdCount}</span> birds for this event.
+            {selectedBirds.length > 0 && (
+              <span className="ml-2">
+                ({selectedBirds.length} / {maxBirdCount} selected)
+              </span>
+            )}
+          </p>
+        </div>
+      )}
+
       {/* Available Birds Section */}
       <div className="mb-8">
         <h3 className="text-lg font-semibold mb-4">Select Birds to Register</h3>
@@ -198,15 +236,19 @@ function BirdInformation({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {birds.map((bird) => {
               const isSelected = selectedBirds.find((b) => b.id === bird.id);
+              const isDisabled = !isSelected && selectedBirds.length >= maxBirdCount;
+              
               return (
                 <div
                   key={bird.id}
-                  className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                  className={`border rounded-lg p-4 transition-all ${
                     isSelected
-                      ? "border-primary bg-primary/5"
-                      : "border-gray-200 hover:border-primary/50"
+                      ? "border-primary bg-primary/5 cursor-pointer"
+                      : isDisabled
+                      ? "border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed"
+                      : "border-gray-200 hover:border-primary/50 cursor-pointer"
                   }`}
-                  onClick={() => handleAddBird(bird)}
+                  onClick={() => !isDisabled && handleAddBird(bird)}
                 >
                   <div className="flex justify-between items-start">
                     <div>
@@ -221,6 +263,11 @@ function BirdInformation({
                     {isSelected && (
                       <div className="text-primary text-sm font-medium">
                         ✓ Selected
+                      </div>
+                    )}
+                    {isDisabled && (
+                      <div className="text-gray-400 text-xs font-medium">
+                        Limit reached
                       </div>
                     )}
                   </div>
@@ -275,6 +322,12 @@ function BirdInformation({
 
 function OwnerInformation() {
   const { user } = useAuthStore();
+  
+  // Display full name if firstName and lastName exist, otherwise fall back to name
+  const displayName = user?.name || 
+    (user?.firstName || user?.lastName 
+      ? `${user?.firstName || ''} ${user?.lastName || ''}`.trim() 
+      : '');
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 xl:p-10 w-full border-b">
@@ -285,7 +338,7 @@ function OwnerInformation() {
         <div>
           <Label className="text-sm font-medium">Name</Label>
           <Input
-            value={user?.name || ""}
+            value={displayName}
             className="mt-2 h-10 sm:h-12 shadow-none"
             readOnly
             disabled
@@ -342,7 +395,7 @@ function CountDown({ event }: { event: Event }) {
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 p-4 sm:p-6 lg:p-8 xl:p-10">
       <div className="border-r px-2 sm:px-4 lg:px-10 text-center">
         <p className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">
-          {event._count.EventInventoryItem}
+          {event._count.eventInventoryItems}
         </p>
         <p className="text-xs sm:text-sm text-gray-600">Total Registrations</p>
       </div>

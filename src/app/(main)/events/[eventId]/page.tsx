@@ -63,7 +63,7 @@ export default function page({
                 Perch Fees
               </p>
               <p className="text-sm sm:text-base font-medium">
-                $ {event.feeSchema.perchFee}
+                $ {event.feeSchema.perchFeeItems[0].perchFee}
               </p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
@@ -71,7 +71,7 @@ export default function page({
                 Final Race Fee
               </p>
               <p className="text-sm sm:text-base font-medium">
-                $ {event.feeSchema.finalRaceFee}
+                $ {event.feeSchema.hotSpotFinalFee}
               </p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
@@ -89,12 +89,12 @@ export default function page({
                 Participants
               </p>
               <p className="text-sm sm:text-base font-medium">
-                {event._count.EventInventoryItem}
+                {event._count.eventInventoryItems}
               </p>
             </div>
             <Button
               onClick={() => {
-                if (event.status !== "OPEN") {
+                if (!event.isOpen) {
                   toast.error("You can only register for upcoming races.");
                   return;
                 }

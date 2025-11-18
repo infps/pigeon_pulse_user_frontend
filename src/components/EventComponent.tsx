@@ -17,7 +17,7 @@ export default function EventComponent({ event }: { event: ListEvents }) {
           />
           <div className="absolute top-2 left-2 bg-white p-1 w-max h-max text-[11px] rounded-lg z-50">
             <span>
-              {event.status === "OPEN" ? "Registration Open" : "CLOSED"}
+              {event.isOpen ? "Registration Open" : "CLOSED"}
             </span>
           </div>
         </div>
@@ -34,11 +34,11 @@ export default function EventComponent({ event }: { event: ListEvents }) {
         </p>
         <div className="flex items-center gap-2 mt-1">
           <span className="text-sm text-gray-500">
-            {event._count.EventInventoryItem} participants
+            {event._count.eventInventoryItems} participants
           </span>
         </div>
         <p className="font-bold mt-1">{event.name}</p>
-        {event.status === "OPEN" && (
+        {event.isOpen && (
           <Button
             variant={"outline"}
             asChild

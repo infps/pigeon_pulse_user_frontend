@@ -2,11 +2,11 @@ const authEndpoints = {
   login: "/auth/breeder/login",
   logout: "/auth/breeder/logout",
   signup: "/auth/breeder/signup",
-  session: "/auth/session",
+  session: "/auth/breeder/session",
 };
 
 const userEndpoints = {
-  currentUser: "/users/profile",
+  currentUser: "/users/breeder/profile",
 };
 
 const birdsEndpoints = {

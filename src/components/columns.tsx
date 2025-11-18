@@ -60,7 +60,7 @@ export const MyEventsColumns: ColumnDef<MyEvents>[] = [
     ),
   },
   {
-    accessorKey: "reserved_birds",
+    accessorKey: "reservedBirds",
     header: "Reserved Birds",
   },
   {
@@ -71,7 +71,7 @@ export const MyEventsColumns: ColumnDef<MyEvents>[] = [
     accessorKey: "registration_date",
     header: "Registration Date",
     cell: ({ row }) => (
-      <div>{new Date(row.original.registration_date).toLocaleDateString()}</div>
+      <div>{new Date(row.original.createdAt).toLocaleDateString()}</div>
     ),
   },
 ];

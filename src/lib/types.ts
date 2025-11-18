@@ -1,5 +1,7 @@
 type User = {
   name: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   email: string;
   id: string;
   role: "BREEDER" | "ADMIN" | "SUPER_ADMIN";
@@ -8,21 +10,35 @@ type User = {
 
 type CurrentUser = {
   id: string;
+  breederNumber: string | null;
   email: string;
-  name: string;
+  firstName: string | null;
+  lastName: string | null;
   country: string | null;
+  isDefaultAddress1: boolean;
+  address1: string | null;
+  city1: string | null;
+  state1: string | null;
+  zip1: string | null;
+  address2: string | null;
+  city2: string | null;
+  state2: string | null;
+  zip2: string | null;
+  phone: string | null;
+  cell: string | null;
+  fax: string | null;
+  email2: string | null;
+  webAddress: string | null;
+  sms: string | null;
   ssn: string | null;
   taxNumber: string | null;
-  address: string | null;
-  city: string | null;
-  state: string | null;
-  zip: string | null;
-  primaryPhone: string | null;
-  cellPhone: string | null;
-  fax: string | null;
-  sms: string | null;
-  alternativeEmail: string | null;
-  webAddress: string | null;
+  statusDate: string | null;
+  note: string | null;
+  loginName: string | null;
+  loginPassword: string | null;
+  defaultNameAgn: string | null;
+  defaultNameAs: string | null;
+  pictureId: string | null;
 };
 
 type Bird = {
@@ -34,34 +50,71 @@ type Bird = {
 
 type ListEvents = {
   name: string;
-  status: "OPEN" | "CLOSED";
   shortName: string;
   date: Date;
+  isOpen: boolean;
   id: string;
   _count: {
-    EventInventoryItem: number;
+    eventInventoryItems: number;
   };
+};
+
+type PerchFeeItem = {
+  birdNo: number;
+  createdAt: string;
+  feeSchemaId: string;
+  id: string;
+  perchFee: number;
+};
+
+type FeeSchema = {
+  entryFee: number;
+  hotSpot1Fee: number;
+  hotSpot2Fee: number;
+  hotSpot3Fee: number;
+  hotSpotFinalFee: number;
+  maxBirdCount: number;
+  perchFeeItems: PerchFeeItem[];
+};
+
+type PrizeSchema = {
+  distributions: Distribution[];
 };
 
 type Event = {
   id: string;
   name: string;
   shortName: string;
-  date: Date;
-  status: "OPEN" | "CLOSED";
+  type: string; // e.g., "AGN"
+  date: Date; // ISO date string ("2025-11-20T18:30:00.000Z")
+  isOpen: boolean;
+
+  // Ranges
+  trainingFrom: number;
+  trainingTo: number;
+  inventoryFrom: number;
+  inventoryTo: number;
+  finalFrom: number;
+  finalTo: number;
+  hotspotFrom: number;
+  hotspotTo: number;
+
+  // Relationships
+  bettingSchemeId: string;
+  feeSchemaId: string;
+  hotspot1PrizeSchemaId: string;
+  hotspot2PrizeSchemaId: string;
+  hotspot3PrizeSchemaId: string;
+  finalRacePrizeSchemaId: string;
+  avgWinnerPrizeSchemaId: string;
+
+  // Nested objects
+  feeSchema: FeeSchema;
+  finalRacePrizeSchema: PrizeSchema;
+
+  // Prisma _count-like relation
   _count: {
-    EventInventoryItem: number;
-  };
-  feeSchema: {
-    entryFee: number;
-    hs1Fee: number;
-    hs2Fee: number;
-    hs3Fee: number;
-    finalRaceFee: number;
-    perchFee: number;
-  };
-  finalRacePrizeSchema: {
-    distributions: Distribution[];
+    eventInventoryItems: number;
   };
 };
 
@@ -77,8 +130,8 @@ type MyEvents = {
     id: string;
     name: string;
   };
-  registration_date: Date;
-  reserved_birds: number;
+  createdAt: Date;
+  reservedBirds: number;
   loft: string;
 };
 
