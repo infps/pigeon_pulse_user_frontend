@@ -29,6 +29,7 @@ const eventInventoryEndpoints = {
 const paymentEndpoints = {
   capture: "/payments/capture",
   my: "/payments/my",
+  createOrder: (id: string) => `/payments/${id}/create-order`,
 };
 export const apiEndpoints = {
   auth: authEndpoints,

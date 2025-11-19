@@ -4,6 +4,7 @@ import { Pencil, CreditCard } from "lucide-react";
 import { Bird, MyEvents, MyPayments } from "@/lib/types";
 import { BirdUpdateForm } from "./BirdCreateForm";
 import { Button } from "./ui/button";
+import { PaymentPaypalButton } from "./PaymentPaypalButton";
 
 export const BirdColumns: ColumnDef<Bird>[] = [
   {
@@ -152,20 +153,7 @@ export const MyPaymentsColumns: ColumnDef<MyPayments>[] = [
             {row.original.status.charAt(0).toUpperCase() +
               row.original.status.slice(1)}
           </span>
-          {isDue && (
-            <Button
-              size="sm"
-              variant="default"
-              className="h-7 px-3 text-xs"
-              onClick={() => {
-                // Handle payment logic here
-                console.log("Pay now clicked for payment:", row.original.id);
-              }}
-            >
-              <CreditCard className="w-3 h-3 mr-1" />
-              Pay Now
-            </Button>
-          )}
+          {isDue && <PaymentPaypalButton paymentId={row.original.id} />}
         </div>
       );
     },

@@ -16,3 +16,10 @@ export function useGetMyPayments() {
     queryKey: ["payments"],
   });
 }
+
+export function useCreatePaymentOrder(paymentId: string) {
+  return useApiRequest({
+    endpoint: apiEndpoints.payment.createOrder(paymentId),
+    method: "POST",
+  });
+}
