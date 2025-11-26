@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function EventComponent({ event }: { event: ListEvents }) {
   return (
     <div className="w-full">
-      <Link href={`/events/${event.id}`}>
+      <Link href={`/events/${event.idEvent}`}>
         <div className="aspect-video relative rounded-lg overflow-hidden">
           <Image
             src={"/eventBanner.webp"}
@@ -24,7 +24,7 @@ export default function EventComponent({ event }: { event: ListEvents }) {
       </Link>
       <div className="mt-2">
         <p className="text-sm text-gray-500">
-          {new Date(event.date).toLocaleDateString("en-US", {
+          {new Date(event.eventDate).toLocaleDateString("en-US", {
             year: "numeric",
             month: "long",
             day: "numeric",
@@ -34,17 +34,17 @@ export default function EventComponent({ event }: { event: ListEvents }) {
         </p>
         <div className="flex items-center gap-2 mt-1">
           <span className="text-sm text-gray-500">
-            {event._count.eventInventoryItems} participants
+            {event._count.eventInventories} participants
           </span>
         </div>
-        <p className="font-bold mt-1">{event.name}</p>
+        <p className="font-bold mt-1">{event.eventName}</p>
         {event.isOpen && (
           <Button
             variant={"outline"}
             asChild
             className="mt-2 border-2 border-primary"
           >
-            <Link href={`/events/${event.id}/register`}>Register Now</Link>
+            <Link href={`/events/${event.idEvent}/register`}>Register Now</Link>
           </Button>
         )}
       </div>

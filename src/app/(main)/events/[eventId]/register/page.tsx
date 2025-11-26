@@ -52,7 +52,7 @@ function RegisterForm({ eventId }: { eventId: string }) {
       <CountDown event={event} />
       <div className="bg-gradient-to-r from-primary to-white text-center">
         <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-4 py-4 text-white px-4">
-          {event.name}
+          {event.eventName}
         </h1>
       </div>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,7 +81,7 @@ function PaymentInformation({
   const calculateTotalAmount = () => {
     let total = 0;
     selectedBirds.forEach((_, index) => {
-      const perchFeeItem = event.feeSchema.perchFeeItems.find(
+      const perchFeeItem = event.feeScheme.perchFeeItems.find(
         (item) => item.birdNo === index + 1
       );
       if (perchFeeItem) {
@@ -106,7 +106,7 @@ function PaymentInformation({
               Number of Birds:
             </span>
             <span className="font-medium text-sm sm:text-base">
-              {selectedBirds.length} / {event.feeSchema.maxBirdCount}
+              {selectedBirds.length} / {event.feeScheme.maxBirdCount}
             </span>
           </div>
           <div className="flex justify-between items-center py-3 border-b-2 border-secondary">
@@ -125,7 +125,7 @@ function PaymentInformation({
           </h4>
           <div className="max-h-48 overflow-y-auto space-y-2">
             {selectedBirds.map((bird, index) => {
-              const perchFeeItem = event.feeSchema.perchFeeItems.find(
+              const perchFeeItem = event.feeScheme.perchFeeItems.find(
                 (item) => item.birdNo === index + 1
               );
               const perchFee = perchFeeItem?.perchFee || 0;
@@ -149,7 +149,7 @@ function PaymentInformation({
 
         <div className="mt-8 flex w-full justify-center">
           <div className="w-full max-w-md">
-            <PaypalButton eventId={event.id} selectedBirds={selectedBirds} />
+            <PaypalButton eventId={String(event.idEvent)} selectedBirds={selectedBirds} />
           </div>
         </div>
 
@@ -175,7 +175,7 @@ function BirdInformation({
   const { data: birdsData } = useListBirds();
   const birds: Bird[] = birdsData?.data || [];
   
-  const maxBirdCount = event?.feeSchema?.maxBirdCount || 0;
+  const maxBirdCount = event?.feeScheme?.maxBirdCount || 0;
 
   const handleAddBird = (bird: Bird) => {
     if (selectedBirds.length >= maxBirdCount) {
@@ -324,10 +324,7 @@ function OwnerInformation() {
   const { user } = useAuthStore();
   
   // Display full name if firstName and lastName exist, otherwise fall back to name
-  const displayName = user?.name || 
-    (user?.firstName || user?.lastName 
-      ? `${user?.firstName || ''} ${user?.lastName || ''}`.trim() 
-      : '');
+  const displayName = user?.name?.trim() || '';
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 xl:p-10 w-full border-b">
@@ -365,11 +362,11 @@ function CountDown({ event }: { event: Event }) {
     seconds: 0,
   });
   useEffect(() => {
-    if (!event?.date) return;
+    if (!event?.eventDate) return;
 
     const updateCountdown = () => {
       const now = new Date().getTime();
-      const eventTime = new Date(event.date).getTime();
+      const eventTime = new Date(event.eventDate).getTime();
       const difference = eventTime - now;
 
       if (difference > 0) {
@@ -389,13 +386,13 @@ function CountDown({ event }: { event: Event }) {
     const interval = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(interval);
-  }, [event?.date]);
+  }, [event?.eventDate]);
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 p-4 sm:p-6 lg:p-8 xl:p-10">
       <div className="border-r px-2 sm:px-4 lg:px-10 text-center">
         <p className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">
-          {event._count.eventInventoryItems}
+          {event._count.eventInventories}
         </p>
         <p className="text-xs sm:text-sm text-gray-600">Total Registrations</p>
       </div>

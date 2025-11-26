@@ -25,7 +25,7 @@ import { Button } from "./ui/button";
 const formSchema = z.object({
   birdName: z.string().min(1, "Bird name is required"),
   color: z.string().min(1, "Color is required"),
-  sex: z.enum(["COCK", "HEN"]),
+  sex: z.number().min(0).max(2),
 });
 export function BirdCreateForm() {
   const { mutateAsync: createBird } = useCreateBird();
@@ -34,7 +34,7 @@ export function BirdCreateForm() {
     defaultValues: {
       birdName: "",
       color: "",
-      sex: "COCK",
+      sex: 0,
     },
   });
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -95,13 +95,17 @@ export function BirdCreateForm() {
             <FormItem>
               <FormLabel>Sex</FormLabel>
               <FormControl>
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select 
+                  value={String(field.value)} 
+                  onValueChange={(value) => field.onChange(Number(value))}
+                >
                   <SelectTrigger className="w-full shadow-none">
                     <SelectValue placeholder="Select sex" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="COCK">Cock</SelectItem>
-                    <SelectItem value="HEN">Hen</SelectItem>
+                    <SelectItem value="0">N/A</SelectItem>
+                    <SelectItem value="1">Cock</SelectItem>
+                    <SelectItem value="2">Hen</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -178,13 +182,17 @@ export function BirdUpdateForm({ values }: { values: Bird }) {
             <FormItem>
               <FormLabel>Sex</FormLabel>
               <FormControl>
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select 
+                  value={String(field.value)} 
+                  onValueChange={(value) => field.onChange(Number(value))}
+                >
                   <SelectTrigger className="w-full shadow-none">
                     <SelectValue placeholder="Select sex" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="COCK">Cock</SelectItem>
-                    <SelectItem value="HEN">Hen</SelectItem>
+                    <SelectItem value="0">N/A</SelectItem>
+                    <SelectItem value="1">Cock</SelectItem>
+                    <SelectItem value="2">Hen</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>

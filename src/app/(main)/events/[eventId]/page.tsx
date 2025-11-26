@@ -42,7 +42,7 @@ export default function page({
       <div className="bg-gradient-to-r from-white to-primary h-48 flex items-center px-4 sm:px-6 lg:px-10 sm:h-64 lg:h-96 relative overflow-hidden">
         <div className="max-w-2xl z-10">
           <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-semibold tracking-wider uppercase leading-tight">
-            {event.name}
+            {event.eventName}
           </h1>
           <p className="mt-2 sm:mt-4 font-light text-xs sm:text-sm lg:text-base max-w-lg">
             Experience the thrill of this exciting pigeon race.
@@ -55,7 +55,7 @@ export default function page({
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <p className="text-xs sm:text-sm text-gray-600 mb-1">Entry Fee</p>
               <p className="text-sm sm:text-base font-medium">
-                $ {event.feeSchema.entryFee}
+                $ {event.feeScheme.entryFee}
               </p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
@@ -63,7 +63,7 @@ export default function page({
                 Perch Fees
               </p>
               <p className="text-sm sm:text-base font-medium">
-                $ {event.feeSchema.perchFeeItems[0].perchFee}
+                $ {event.feeScheme.perchFeeItems[0].perchFee}
               </p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
@@ -71,13 +71,13 @@ export default function page({
                 Final Race Fee
               </p>
               <p className="text-sm sm:text-base font-medium">
-                $ {event.feeSchema.hotSpotFinalFee}
+                $ {event.feeScheme.hotSpotFinalFee}
               </p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <p className="text-xs sm:text-sm text-gray-600 mb-1">Race Date</p>
               <p className="text-sm sm:text-base font-medium">
-                {new Date(event.date).toLocaleDateString("en-US", {
+                {new Date(event.eventDate).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "short",
                   day: "numeric",
@@ -89,7 +89,7 @@ export default function page({
                 Participants
               </p>
               <p className="text-sm sm:text-base font-medium">
-                {event._count.eventInventoryItems}
+                {event._count.eventInventories}
               </p>
             </div>
             <Button
@@ -98,7 +98,7 @@ export default function page({
                   toast.error("You can only register for upcoming races.");
                   return;
                 }
-                router.push(`/events/${event.id}/register`);
+                router.push(`/events/${event.idEvent}/register`);
               }}
               size="lg"
               className="w-full sm:w-auto px-8"
@@ -109,7 +109,7 @@ export default function page({
         </div>
       </div>
       <div className="bg-gray-50">
-        <MoreEvents id={event.id} />
+        <MoreEvents id={String(event.idEvent)} />
       </div>
     </div>
   );
@@ -155,7 +155,7 @@ function MoreEvents({ id }: { id: string }) {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {events.map((event) => (
-            <EventComponent key={event.id} event={event} />
+            <EventComponent key={event.idEvent} event={event} />
           ))}
         </div>
       </div>

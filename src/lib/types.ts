@@ -1,11 +1,8 @@
 type User = {
+  idBreeder: number;
   name: string | null;
-  firstName?: string | null;
-  lastName?: string | null;
-  email: string;
-  id: string;
-  role: "BREEDER" | "ADMIN" | "SUPER_ADMIN";
-  status: "ACTIVE" | "INACTIVE" | "PROSPECT";
+  email: string | null;
+  status: number;
 };
 
 type CurrentUser = {
@@ -45,26 +42,25 @@ type Bird = {
   id: string;
   birdName: string;
   color: string;
-  sex: "HEN" | "COCK";
+  sex: number;
 };
 
 type ListEvents = {
-  name: string;
-  shortName: string;
-  date: Date;
-  isOpen: boolean;
-  id: string;
+  idEvent: number;
+  eventDate: string;
+  eventName: string;
+  eventShortName: string;
+  isOpen: number;
   _count: {
-    eventInventoryItems: number;
+    eventInventories: number;
   };
 };
 
 type PerchFeeItem = {
+  idPerchFeeItem: number;
   birdNo: number;
-  createdAt: string;
-  feeSchemaId: string;
-  id: string;
   perchFee: number;
+  idFeeScheme: number;
 };
 
 type FeeSchema = {
@@ -82,46 +78,40 @@ type PrizeSchema = {
 };
 
 type Event = {
-  id: string;
-  name: string;
-  shortName: string;
-  type: string; // e.g., "AGN"
-  date: Date; // ISO date string ("2025-11-20T18:30:00.000Z")
-  isOpen: boolean;
-
-  // Ranges
-  trainingFrom: number;
-  trainingTo: number;
-  inventoryFrom: number;
-  inventoryTo: number;
-  finalFrom: number;
-  finalTo: number;
-  hotspotFrom: number;
-  hotspotTo: number;
-
-  // Relationships
-  bettingSchemeId: string;
-  feeSchemaId: string;
-  hotspot1PrizeSchemaId: string;
-  hotspot2PrizeSchemaId: string;
-  hotspot3PrizeSchemaId: string;
-  finalRacePrizeSchemaId: string;
-  avgWinnerPrizeSchemaId: string;
-
-  // Nested objects
-  feeSchema: FeeSchema;
-  finalRacePrizeSchema: PrizeSchema;
-
-  // Prisma _count-like relation
+  idEvent: number;
+  eventName: string;
+  eventShortName: string;
+  eventDate: string;
+  isOpen: number;
+  eventType: number;
   _count: {
-    eventInventoryItems: number;
+    eventInventories: number;
+  };
+  idFeeScheme: number;
+  idHotSpotAvgPrizeScheme: number;
+  idHotSpot1PrizeScheme: number;
+  idHotSpot2PrizeScheme: number;
+  idHotSpot3PrizeScheme: number;
+  idBettingScheme: number;
+  idFinalPrizeScheme: number;
+  feeScheme: {
+    maxBirdCount: number;
+    entryFee: number;
+    hotSpot1Fee: number;
+    hotSpot2Fee: number;
+    hotSpot3Fee: number;
+    hotSpotFinalFee: number | null;
+    perchFeeItems: PerchFeeItem[];
+  };
+  finalPrizeScheme: {
+    prizeSchemeItems: Distribution[];
   };
 };
 
 type Distribution = {
   fromPosition: number;
   toPosition: number;
-  percentage: number;
+  prizeValue: number;
 };
 
 type MyEvents = {
