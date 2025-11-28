@@ -28,6 +28,7 @@ const eventInventoryEndpoints = {
 
 const paymentEndpoints = {
   capture: "/payments/capture",
+  cancel: "/payments/cancel",
   my: "/payments/my",
   createOrder: (id: string) => `/payments/${id}/create-order`,
 };

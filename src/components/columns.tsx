@@ -23,6 +23,17 @@ export const BirdColumns: ColumnDef<Bird>[] = [
   {
     accessorKey: "sex",
     header: "Sex",
+    cell: ({ row }) => {
+      const sex = row.original.sex;
+      const sexMap: Record<number, string> = {
+        0: "N/A",
+        1: "Cock",
+        2: "Hen",
+      };
+      return sex !== null && sex !== undefined
+        ? sexMap[sex] || "Unknown"
+        : "N/A";
+    },
   },
   {
     accessorKey: "actions",
@@ -50,14 +61,14 @@ export const MyEventsColumns: ColumnDef<MyEvents>[] = [
     cell: ({ row }) => <div>{row.index + 1}</div>,
   },
   {
-    accessorKey: "event.name",
+    accessorKey: "event.eventName",
     header: "Event Name",
   },
   {
-    accessorKey: "event.date",
+    accessorKey: "event.eventDate",
     header: "Event Date",
     cell: ({ row }) => (
-      <div>{new Date(row.original.event.date).toLocaleDateString()}</div>
+      <div>{new Date(row.original.event.eventDate).toLocaleDateString()}</div>
     ),
   },
   {
@@ -68,13 +79,6 @@ export const MyEventsColumns: ColumnDef<MyEvents>[] = [
     accessorKey: "loft",
     header: "Loft",
   },
-  {
-    accessorKey: "registration_date",
-    header: "Registration Date",
-    cell: ({ row }) => (
-      <div>{new Date(row.original.createdAt).toLocaleDateString()}</div>
-    ),
-  },
 ];
 
 export const MyPaymentsColumns: ColumnDef<MyPayments>[] = [
@@ -84,16 +88,18 @@ export const MyPaymentsColumns: ColumnDef<MyPayments>[] = [
     cell: ({ row }) => <div>{row.index + 1}</div>,
   },
   {
-    accessorKey: "eventInventory.event.name",
+    accessorKey: "eventInventory.event.eventName",
     header: "Event Name",
-    cell: ({ row }) => <div>{row.original.eventInventory.event.name}</div>,
+    cell: ({ row }) => <div>{row.original.eventInventory.event.eventName}</div>,
   },
   {
-    accessorKey: "eventInventory.event.date",
+    accessorKey: "eventInventory.event.eventDate",
     header: "Event Date",
     cell: ({ row }) => (
       <div>
-        {new Date(row.original.eventInventory.event.date).toLocaleDateString()}
+        {new Date(
+          row.original.eventInventory.event.eventDate
+        ).toLocaleDateString()}
       </div>
     ),
   },
@@ -111,19 +117,14 @@ export const MyPaymentsColumns: ColumnDef<MyPayments>[] = [
   {
     accessorKey: "paymentValue",
     header: "Payment Value",
-    cell: ({ row }) => <div>${row.original.paymentValue.toFixed(2)}</div>,
-  },
-  {
-    accessorKey: "type",
-    header: "Payment Type",
-    cell: ({ row }) => <div>{row.original.type.replace(/_/g, " ")}</div>,
+    cell: ({ row }) => <div>${row.original.paymentValue?.toFixed(2)}</div>,
   },
   {
     accessorKey: "status",
     header: "Payment Status",
     cell: ({ row }) => {
-      const status = row.original.status.toLowerCase();
-      const isDue = status === "due" || status === "pending";
+      const status = row.original.status === 0 ? "pending" : "paid";
+      const isDue = status === "pending";
 
       const getStatusColor = (status: string) => {
         switch (status) {
@@ -150,10 +151,9 @@ export const MyPaymentsColumns: ColumnDef<MyPayments>[] = [
               status
             )}`}
           >
-            {row.original.status.charAt(0).toUpperCase() +
-              row.original.status.slice(1)}
+            {row.original.status === 0 ? "Pending" : "Paid"}
           </span>
-          {isDue && <PaymentPaypalButton paymentId={row.original.id} />}
+          {isDue && <PaymentPaypalButton paymentId={row.original.idPayment} />}
         </div>
       );
     },

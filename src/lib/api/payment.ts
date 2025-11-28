@@ -9,6 +9,14 @@ export function useCapturePayment() {
   });
 }
 
+export function useCancelPayment() {
+  return useApiRequest({
+    endpoint: apiEndpoints.payment.cancel,
+    method: "POST",
+    invalidateKeys: [{ queryKey: ["payments"] }],
+  });
+}
+
 export function useGetMyPayments() {
   return useApiRequest({
     endpoint: apiEndpoints.payment.my,

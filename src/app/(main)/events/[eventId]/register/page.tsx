@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useListBirds } from "@/lib/api/bird";
 import { useGetEventById } from "@/lib/api/event";
 import { useCreateEventInventory } from "@/lib/api/eventInventory";
-import { useCapturePayment } from "@/lib/api/payment";
+import { useCapturePayment, useCancelPayment } from "@/lib/api/payment";
 import { Bird, Event } from "@/lib/types";
 import { useAuthStore } from "@/store/store";
 import { useRouter } from "next/navigation";
@@ -132,7 +132,7 @@ function PaymentInformation({
               
               return (
                 <div
-                  key={bird.id}
+                  key={bird.idBird}
                   className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded text-sm"
                 >
                   <span className="flex-1 truncate">
@@ -149,7 +149,7 @@ function PaymentInformation({
 
         <div className="mt-8 flex w-full justify-center">
           <div className="w-full max-w-md">
-            <PaypalButton eventId={String(event.idEvent)} selectedBirds={selectedBirds} />
+            <PaypalButton eventId={event.idEvent} selectedBirds={selectedBirds} />
           </div>
         </div>
 
@@ -183,7 +183,7 @@ function BirdInformation({
       return;
     }
     
-    if (!selectedBirds.find((b) => b.id === bird.id)) {
+    if (!selectedBirds.find((b) => b.idBird === bird.idBird)) {
       setSelectedBirds([...selectedBirds, bird]);
       toast.success(`${bird.birdName} added to registration`);
     } else {
@@ -192,8 +192,8 @@ function BirdInformation({
   };
 
   const handleRemoveBird = (birdId: string) => {
-    const bird = selectedBirds.find((b) => b.id === birdId);
-    setSelectedBirds(selectedBirds.filter((bird) => bird.id !== birdId));
+    const bird = selectedBirds.find((b) => b.idBird === birdId);
+    setSelectedBirds(selectedBirds.filter((bird) => bird.idBird !== birdId));
     if (bird) {
       toast.success(`${bird.birdName} removed from registration`);
     }
@@ -235,12 +235,12 @@ function BirdInformation({
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {birds.map((bird) => {
-              const isSelected = selectedBirds.find((b) => b.id === bird.id);
+              const isSelected = selectedBirds.find((b) => b.idBird === bird.idBird);
               const isDisabled = !isSelected && selectedBirds.length >= maxBirdCount;
               
               return (
                 <div
-                  key={bird.id}
+                  key={bird.idBird}
                   className={`border rounded-lg p-4 transition-all ${
                     isSelected
                       ? "border-primary bg-primary/5 cursor-pointer"
@@ -295,7 +295,7 @@ function BirdInformation({
           <div className="space-y-3">
             {selectedBirds.map((bird) => (
               <div
-                key={bird.id}
+                key={bird.idBird}
                 className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border"
               >
                 <div className="flex-1">
@@ -306,7 +306,7 @@ function BirdInformation({
                   </div>
                 </div>
                 <button
-                  onClick={() => handleRemoveBird(bird.id)}
+                  onClick={() => handleRemoveBird(bird.idBird)}
                   className="text-red-600 hover:text-red-800 text-sm font-medium px-3 py-1 border border-red-200 rounded hover:bg-red-50 transition-colors ml-4"
                 >
                   Remove
@@ -422,7 +422,7 @@ function PaypalButton({
   eventId,
   selectedBirds,
 }: {
-  eventId: string;
+  eventId: number;
   selectedBirds: Bird[];
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -434,6 +434,10 @@ function PaypalButton({
     mutateAsync: CapturePaymentMutateAsync,
     isPending: CapturePaymentPending,
   } = useCapturePayment();
+  const {
+    mutateAsync: CancelPaymentMutateAsync,
+    isPending: CancelPaymentPending,
+  } = useCancelPayment();
   const router = useRouter();
 
   // Validate PayPal client ID
@@ -466,7 +470,7 @@ function PaypalButton({
         throw new Error("No birds selected for registration");
       }
 
-      const birds: string[] = selectedBirds.map((bird) => bird.id);
+      const birds: string[] = selectedBirds.map((bird) => bird.idBird);
       const { data, error } = await RegisterEventMutateAsync({
         birds,
         eventId,
@@ -547,14 +551,38 @@ function PaypalButton({
     toast.error(errorMessage);
   }
 
-  function onCancel(data: any) {
+  async function onCancel(data: Record<string, unknown>) {
     console.log("PayPal payment cancelled:", data);
-    setIsProcessing(false);
-    toast.info("Payment cancelled");
+    
+    try {
+      const orderID = data.orderID as string;
+      
+      if (orderID && CancelPaymentMutateAsync) {
+        toast.info("Cancelling registration...");
+        
+        const { error } = await CancelPaymentMutateAsync({
+          orderId: orderID,
+        });
+
+        if (error) {
+          console.error("Error cancelling payment:", error);
+          toast.error("Failed to cancel registration. Please contact support.");
+        } else {
+          toast.success("Registration cancelled successfully");
+        }
+      } else {
+        toast.info("Payment cancelled");
+      }
+    } catch (error) {
+      console.error("Error during cancellation:", error);
+      toast.error("Failed to cancel registration");
+    } finally {
+      setIsProcessing(false);
+    }
   }
 
   const isDisabled =
-    isProcessing || RegisterEventPending || CapturePaymentPending;
+    isProcessing || RegisterEventPending || CapturePaymentPending || CancelPaymentPending;
 
   return (
     <div className="w-full">
@@ -566,6 +594,8 @@ function PaypalButton({
               ? "Creating order..."
               : CapturePaymentPending
               ? "Processing payment..."
+              : CancelPaymentPending
+              ? "Cancelling..."
               : "Processing..."}
           </div>
         </div>

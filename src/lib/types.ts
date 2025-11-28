@@ -39,7 +39,7 @@ type CurrentUser = {
 };
 
 type Bird = {
-  id: string;
+  idBird: string;
   birdName: string;
   color: string;
   sex: number;
@@ -116,33 +116,25 @@ type Distribution = {
 
 type MyEvents = {
   event: {
-    date: Date;
-    id: string;
-    name: string;
+    eventDate: Date;
+    idEvent: string;
+    eventName: string;
   };
-  createdAt: Date;
   reservedBirds: number;
   loft: string;
 };
 
 type MyPayments = {
-  id: string;
-  paymentDate: Date | null;
-  paymentValue: number;
-  type:
-    | "PERCH_FEE"
-    | "ENTRY_FEE"
-    | "HOTSPOT_FEE_1"
-    | "HOTSPOT_FEE_2"
-    | "HOTSPOT_FEE_3"
-    | "FINAL_RACE_FEE"
-    | "OTHER";
-  status: string;
+  idPayment: string;
+  paymentDate: string | null;
+  paymentValue: number | null;
+  paymentType: number | null;
+  status: number | null;
   eventInventory: {
     event: {
-      id: string;
-      name: string;
-      date: Date;
+      idEvent: string;
+      eventName: string;
+      eventDate: string;
     };
   };
 };
