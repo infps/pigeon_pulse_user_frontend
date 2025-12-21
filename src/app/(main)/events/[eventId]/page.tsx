@@ -1,6 +1,7 @@
 "use client";
 
 import EventComponent from "@/components/EventComponent";
+import EventParticipants from "@/components/EventParticipants";
 import { Button } from "@/components/ui/button";
 import { useGetEventById, useGetMoreEvents } from "@/lib/api/event";
 import { Event } from "@/lib/types";
@@ -108,6 +109,7 @@ export default function page({
           </div>
         </div>
       </div>
+      <EventParticipants eventId={String(event.idEvent)} />
       <div className="bg-gray-50">
         <MoreEvents id={String(event.idEvent)} />
       </div>

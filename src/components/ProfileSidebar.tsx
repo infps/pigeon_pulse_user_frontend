@@ -45,6 +45,12 @@ export default function ProfileSidebar() {
       rightIcon: ChevronRight,
     },
     {
+      name: "Teams",
+      href: "/profile/teams",
+      leftIcon: User,
+      rightIcon: ChevronRight,
+    },
+    {
       name: "Events",
       href: "/profile/my-events",
       leftIcon: User,

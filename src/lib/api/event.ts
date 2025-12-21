@@ -41,3 +41,10 @@ export function useGetMoreEvents({
     queryKey: ["more-events", id, queryParams],
   });
 }
+
+export function useGetEventParticipants(id: string) {
+  return useApiRequest({
+    endpoint: apiEndpoints.events.participants(id),
+    queryKey: ["event-participants", id],
+  });
+}

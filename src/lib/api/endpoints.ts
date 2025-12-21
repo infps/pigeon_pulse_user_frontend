@@ -19,6 +19,7 @@ const eventsEndpoints = {
   all: "/events",
   byId: (id: string) => `/events/${id}`,
   more: (id: string) => `/events/${id}/more`,
+  participants: (id: string) => `/events/${id}/participants`,
 };
 
 const eventInventoryEndpoints = {
@@ -32,6 +33,14 @@ const paymentEndpoints = {
   my: "/payments/my",
   createOrder: (id: string) => `/payments/${id}/create-order`,
 };
+
+const teamEndpoints = {
+  create: "/users/teams",
+  byBreederId: (breederId: string) => `/users/teams/${breederId}`,
+  update: (teamId: string) => `/users/teams/${teamId}`,
+  delete: (teamId: string) => `/users/teams/${teamId}`,
+};
+
 export const apiEndpoints = {
   auth: authEndpoints,
   user: userEndpoints,
@@ -39,4 +48,5 @@ export const apiEndpoints = {
   events: eventsEndpoints,
   eventInventory: eventInventoryEndpoints,
   payment: paymentEndpoints,
+  team: teamEndpoints,
 };

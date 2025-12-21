@@ -138,6 +138,34 @@ type MyPayments = {
     };
   };
 };
+
+type EventParticipantBird = {
+  idEventInventoryItem: number;
+  birdNo: number | null;
+  band: string;
+  birdName: string;
+  color: string;
+  sex: number | null;
+};
+
+type EventParticipant = {
+  idEventInventory: number;
+  breederName: string;
+  loft: string;
+  city: string;
+  state: string;
+  country: string;
+  reservedBirds: number;
+  signInDate: string | null;
+  birds: EventParticipantBird[];
+};
+
+type Team = {
+  idTeam: number;
+  teamName: string | null;
+  idBreeder: number | null;
+};
+
 export type {
   User,
   CurrentUser,
@@ -146,4 +174,7 @@ export type {
   Event,
   MyEvents,
   MyPayments,
+  EventParticipant,
+  EventParticipantBird,
+  Team,
 };

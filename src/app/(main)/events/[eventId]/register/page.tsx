@@ -7,7 +7,8 @@ import { useListBirds } from "@/lib/api/bird";
 import { useGetEventById } from "@/lib/api/event";
 import { useCreateEventInventory } from "@/lib/api/eventInventory";
 import { useCapturePayment, useCancelPayment } from "@/lib/api/payment";
-import { Bird, Event } from "@/lib/types";
+import { useGetBreederTeams } from "@/lib/api/team";
+import { Bird, Event, Team } from "@/lib/types";
 import { useAuthStore } from "@/store/store";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
@@ -29,6 +30,7 @@ export default function page({
 
 function RegisterForm({ eventId }: { eventId: string }) {
   const [selectedBirds, setSelectedBirds] = useState<Bird[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<string>("");
   const { data, isError, error, isPending } = useGetEventById(eventId);
   if (isPending) return <div>Loading...</div>;
   if (isError) return <div>Error: {error.message}</div>;
@@ -57,13 +59,21 @@ function RegisterForm({ eventId }: { eventId: string }) {
       </div>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <OwnerInformation />
+        <TeamSelection
+          selectedTeam={selectedTeam}
+          setSelectedTeam={setSelectedTeam}
+        />
         <BirdInformation
           selectedBirds={selectedBirds}
           setSelectedBirds={setSelectedBirds}
           event={event}
         />
         {selectedBirds.length > 0 && (
-          <PaymentInformation event={event} selectedBirds={selectedBirds} />
+          <PaymentInformation 
+            event={event} 
+            selectedBirds={selectedBirds}
+            selectedTeam={selectedTeam}
+          />
         )}
       </div>
     </div>
@@ -73,9 +83,11 @@ function RegisterForm({ eventId }: { eventId: string }) {
 function PaymentInformation({
   event,
   selectedBirds,
+  selectedTeam,
 }: {
   event: Event;
   selectedBirds: Bird[];
+  selectedTeam: string;
 }) {
   // Calculate total based on individual perch fees for each bird position
   const calculateTotalAmount = () => {
@@ -149,7 +161,11 @@ function PaymentInformation({
 
         <div className="mt-8 flex w-full justify-center">
           <div className="w-full max-w-md">
-            <PaypalButton eventId={event.idEvent} selectedBirds={selectedBirds} />
+            <PaypalButton 
+              eventId={event.idEvent} 
+              selectedBirds={selectedBirds}
+              selectedTeam={selectedTeam}
+            />
           </div>
         </div>
 
@@ -355,6 +371,55 @@ function OwnerInformation() {
   );
 }
 
+function TeamSelection({
+  selectedTeam,
+  setSelectedTeam,
+}: {
+  selectedTeam: string;
+  setSelectedTeam: (team: string) => void;
+}) {
+  const { user } = useAuthStore();
+  const breederId = user?.idBreeder.toString();
+  const { data: teamsData, isPending, isError } = useGetBreederTeams(breederId || "");
+  
+  const teams: Team[] = teamsData?.data || [];
+
+  return (
+    <div className="p-4 sm:p-6 lg:p-8 xl:p-10 w-full border-b">
+      <h2 className="font-bold text-secondary mb-4 text-xl sm:text-2xl md:text-3xl lg:text-4xl">
+        Team / Loft Information
+      </h2>
+      
+      {isPending ? (
+        <div className="text-gray-500">Loading teams...</div>
+      ) : isError ? (
+        <div className="text-gray-500">Unable to load teams</div>
+      ) : (
+        <div>
+          <Label className="text-sm font-medium">Select Team (Optional)</Label>
+          <select
+            value={selectedTeam}
+            onChange={(e) => setSelectedTeam(e.target.value)}
+            className="mt-2 h-10 sm:h-12 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-none outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] md:text-sm"
+          >
+            <option value="">Main Loft (Default)</option>
+            {teams.map((team) => (
+              <option key={team.idTeam} value={team.teamName || ""}>
+                {team.teamName}
+              </option>
+            ))}
+          </select>
+          {teams.length === 0 && (
+            <p className="mt-2 text-xs text-gray-500">
+              No teams available. You can create teams in your profile.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function CountDown({ event }: { event: Event }) {
   const [timeRemaining, setTimeRemaining] = useState({
     hours: 0,
@@ -421,9 +486,11 @@ function CountDown({ event }: { event: Event }) {
 function PaypalButton({
   eventId,
   selectedBirds,
+  selectedTeam,
 }: {
   eventId: number;
   selectedBirds: Bird[];
+  selectedTeam: string;
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const {
@@ -474,6 +541,7 @@ function PaypalButton({
       const { data, error } = await RegisterEventMutateAsync({
         birds,
         eventId,
+        loft: selectedTeam || undefined,
       });
 
       if (error) {

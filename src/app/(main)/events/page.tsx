@@ -40,7 +40,7 @@ export default function page() {
         )}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {events.map((event) => (
-            <EventComponent key={event.id} event={event} />
+            <EventComponent key={event.idEvent} event={event} />
           ))}
         </div>
       </div>
