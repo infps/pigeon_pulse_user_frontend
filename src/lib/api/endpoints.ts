@@ -41,6 +41,12 @@ const teamEndpoints = {
   delete: (teamId: string) => `/users/teams/${teamId}`,
 };
 
+const bettingEndpoints = {
+  participantBirds: (eventId: string, breederId: number) => 
+    `/betting/event/${eventId}/participant/birds?idBreeder=${breederId}`,
+  placeBet: "/betting/place-bet",
+};
+
 export const apiEndpoints = {
   auth: authEndpoints,
   user: userEndpoints,
@@ -49,4 +55,5 @@ export const apiEndpoints = {
   eventInventory: eventInventoryEndpoints,
   payment: paymentEndpoints,
   team: teamEndpoints,
+  betting: bettingEndpoints,
 };

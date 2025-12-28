@@ -189,7 +189,17 @@ function BirdInformation({
   event: Event;
 }) {
   const { data: birdsData } = useListBirds();
-  const birds: Bird[] = birdsData?.data || [];
+  const allBirds: Bird[] = birdsData?.data || [];
+  
+  // Filter birds: exclude lost birds and birds currently in other events
+  const availableBirds = allBirds.filter(bird => 
+    !bird.isLost && 
+    (!bird.eventInventoryItems || bird.eventInventoryItems.length === 0)
+  );
+  
+  const busyBirds = allBirds.filter(bird =>
+    bird.eventInventoryItems && bird.eventInventoryItems.length > 0
+  );
   
   const maxBirdCount = event?.feeScheme?.maxBirdCount || 0;
 
@@ -240,17 +250,47 @@ function BirdInformation({
           </p>
         </div>
       )}
+      
+      {/* Busy Birds Warning */}
+      {busyBirds.length > 0 && (
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-sm text-yellow-800 font-semibold mb-2">
+            ⚠️ Birds Currently Unavailable ({busyBirds.length})
+          </p>
+          <p className="text-xs text-yellow-700 mb-3">
+            The following birds are currently registered in other events and cannot be selected:
+          </p>
+          <div className="space-y-2">
+            {busyBirds.map((bird) => {
+              const currentEvent = bird.eventInventoryItems?.[0];
+              return (
+                <div key={bird.idBird} className="flex items-center justify-between text-xs bg-white p-2 rounded border border-yellow-100">
+                  <span className="font-medium text-gray-900">{bird.birdName}</span>
+                  {currentEvent && (
+                    <span className="text-yellow-700">
+                      Busy in: {currentEvent.eventInventory.event.eventShortName || currentEvent.eventInventory.event.eventName}
+                      {currentEvent.birdNo && ` (Bird #${currentEvent.birdNo})`}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Available Birds Section */}
       <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-4">Select Birds to Register</h3>
-        {birds.length === 0 ? (
+        <h3 className="text-lg font-semibold mb-4">
+          Available Birds to Register ({availableBirds.length})
+        </h3>
+        {availableBirds.length === 0 ? (
           <p className="text-gray-500">
-            No birds available. Please add birds to your account first.
+            No birds available. {busyBirds.length > 0 ? 'All your birds are currently busy in other events.' : 'Please add birds to your account first.'}
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {birds.map((bird) => {
+            {availableBirds.map((bird) => {
               const isSelected = selectedBirds.find((b) => b.idBird === bird.idBird);
               const isDisabled = !isSelected && selectedBirds.length >= maxBirdCount;
               
@@ -271,6 +311,11 @@ function BirdInformation({
                       <h4 className="font-medium text-gray-900">
                         {bird.birdName}
                       </h4>
+                      {bird.band && (
+                        <p className="text-xs text-gray-500 mb-1">
+                          Band: {bird.band}
+                        </p>
+                      )}
                       <p className="text-sm text-gray-600">
                         Color: {bird.color}
                       </p>

@@ -1,10 +1,11 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { Pencil, CreditCard } from "lucide-react";
+import { Pencil, CreditCard, AlertCircle } from "lucide-react";
 import { Bird, MyEvents, MyPayments } from "@/lib/types";
 import { BirdUpdateForm } from "./BirdCreateForm";
 import { Button } from "./ui/button";
 import { PaymentPaypalButton } from "./PaymentPaypalButton";
+import Link from "next/link";
 
 export const BirdColumns: ColumnDef<Bird>[] = [
   {
@@ -15,6 +16,11 @@ export const BirdColumns: ColumnDef<Bird>[] = [
   {
     accessorKey: "birdName",
     header: "Bird Name",
+  },
+  {
+    accessorKey: "band",
+    header: "Band",
+    cell: ({ row }) => row.original.band || "N/A",
   },
   {
     accessorKey: "color",
@@ -33,6 +39,48 @@ export const BirdColumns: ColumnDef<Bird>[] = [
       return sex !== null && sex !== undefined
         ? sexMap[sex] || "Unknown"
         : "N/A";
+    },
+  },
+  {
+    accessorKey: "availability",
+    header: "Availability",
+    cell: ({ row }) => {
+      const currentEvent = row.original.eventInventoryItems?.[0];
+      
+      if (row.original.isLost) {
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">
+            <AlertCircle className="h-3 w-3" />
+            Lost
+          </span>
+        );
+      }
+      
+      if (currentEvent) {
+        const event = currentEvent.eventInventory.event;
+        return (
+          <div className="space-y-1">
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+              <AlertCircle className="h-3 w-3" />
+              Busy
+            </span>
+            <Link href={`/events/${event.idEvent}`} className="block">
+              <p className="text-xs text-blue-600 hover:underline">
+                {event.eventShortName || event.eventName}
+              </p>
+              <p className="text-xs text-gray-500">
+                Bird #{currentEvent.birdNo}
+              </p>
+            </Link>
+          </div>
+        );
+      }
+      
+      return (
+        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
+          Available
+        </span>
+      );
     },
   },
   {
